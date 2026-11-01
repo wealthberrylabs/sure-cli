@@ -1,0 +1,4 @@
+/.toolchain-check
+*.gem
+/.bundle/
+/coverage/
