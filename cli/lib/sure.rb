@@ -6,6 +6,7 @@ require_relative "sure/catalog"
 require_relative "sure/config"
 require_relative "sure/config/resolver"
 require_relative "sure/http/url_builder"
+require_relative "sure/auth/api_key_provider"
 require_relative "sure/cli"
 
 # Public namespace for the Sure command-line client.
