@@ -19,4 +19,8 @@ _sure() {
   esac
 }
 
-_sure "$@"
+if [ "$funcstack[1]" = "_sure" ]; then
+  _sure "$@"
+else
+  compdef _sure sure
+fi

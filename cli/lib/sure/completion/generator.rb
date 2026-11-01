@@ -74,6 +74,9 @@ module Sure
         root = words(root_commands.keys)
         auth = words(subcommands_for("auth"))
 
+        # Autoloading from fpath runs this file as the body of `_sure`, so it must
+        # re-enter the definition it just installed; sourcing it from .zshrc must
+        # only register the completion.
         <<~ZSH
           #compdef sure
 
@@ -96,7 +99,11 @@ module Sure
             esac
           }
 
-          _sure "$@"
+          if [ "$funcstack[1]" = "_sure" ]; then
+            _sure "$@"
+          else
+            compdef _sure sure
+          fi
         ZSH
       end
 
