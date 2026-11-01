@@ -3,6 +3,7 @@
 require_relative "errors"
 require_relative "catalog/operation"
 require_relative "catalog/loader"
+require_relative "catalog/validator"
 
 module Sure
   # Machine-readable command catalog: the single source for help examples,

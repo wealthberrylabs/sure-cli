@@ -27,7 +27,7 @@ domain commands (`sure accounts list`), which belong to Phase 2.
 | Output | Table on a TTY, stable JSON envelope when piped; explicit `--json/--table/--csv/--ndjson/--fields` | Script-safe defaults with a documented `schema_version: 1` envelope (D-11, D-12, D-16). |
 | Errors | One `Errors::Mapper` at the `CLI::Runner` boundary with semantic exit codes `0–9` | Commands never call `exit`; no Ruby backtraces for expected failures (D-13). |
 | Deployment | `gem build sure.gemspec` + install into a temporary `GEM_HOME`; publish to RubyGems in a later release phase | Proves FOUND-01 locally without coupling Phase 1 to a release pipeline. |
-| Directory layout | `cli/lib/sure/{cli,config,auth,http,errors,output,doctor,completion}` | Mirrors the responsibility map in `01-RESEARCH.md`; each module has one job. |
+| Directory layout | `cli/lib/sure/{catalog,cli,config,auth,http,errors,output,doctor,completion}` | Mirrors the responsibility map in `01-RESEARCH.md`; each module has one job. |
 
 ## Stack Touched in Phase 1
 

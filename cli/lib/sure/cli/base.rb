@@ -12,6 +12,13 @@ module Sure
     class Base < Thor
       NOT_IMPLEMENTED = "not implemented until its plan lands"
 
+      # Thor injects `tree` into every subclass. It is an implementation aid,
+      # not part of the product surface, so hide it from help and validation.
+      desc "tree", "Print the Thor command tree", hide: true
+      def tree
+        super
+      end
+
       class << self
         # Builds a Thor description that starts with the catalog description and
         # appends the catalog-backed examples.

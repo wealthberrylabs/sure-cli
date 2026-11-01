@@ -187,3 +187,118 @@ commands:
       method: null
       path: null
     version_added: "0.1.0"
+
+  # Planned entries validate the schema and future help shape. They are not
+  # mounted in Phase 1, so they never appear in help or completion.
+  accounts.list:
+    path: [accounts, list]
+    summary: "List accounts with balances"
+    description: |
+      Lists the family's accounts, their balances, and currency metadata.
+      Delivered in Phase 2 on top of the same request pipeline.
+    risk: read
+    status: planned
+    aliases: ["acct list"]
+    arguments: []
+    options: []
+    examples:
+      - sure accounts list
+      - sure accounts list --json
+    api:
+      method: get
+      path: "/api/v1/accounts"
+    version_added: "0.2.0"
+
+  transactions.add:
+    path: [transactions, add]
+    summary: "Create a transaction"
+    description: |
+      Creates one transaction in an account after scope preflight and the
+      Phase 3 confirmation framework.
+    risk: raw_write
+    status: planned
+    aliases: ["tx add"]
+    arguments: []
+    options: []
+    examples:
+      - sure transactions add --account checking --amount -42.50 --date 2026-10-31 --merchant "Coffee Shop"
+    api:
+      method: post
+      path: "/api/v1/transactions"
+    version_added: "0.3.0"
+
+  cashflow:
+    path: [cashflow]
+    summary: "Show cash flow for a period"
+    description: |
+      Reports income, expenses, and net cash flow using the server's
+      authoritative cash-flow calculation.
+    risk: read
+    status: planned
+    aliases: ["cf"]
+    arguments: []
+    options: []
+    examples:
+      - sure cashflow --from 2026-01-01 --to 2026-12-31
+      - sure reports cashflow --json
+    api:
+      method: get
+      path: "/api/v1/cashflow"
+    version_added: "0.2.0"
+
+  balance-sheet:
+    path: [balance-sheet]
+    summary: "Show assets and liabilities at a date"
+    description: |
+      Reports the family's balance sheet as calculated by the server.
+    risk: read
+    status: planned
+    aliases: []
+    arguments: []
+    options: []
+    examples:
+      - sure balance-sheet --as-of 2026-10-31
+    api:
+      method: get
+      path: "/api/v1/balance_sheet"
+    version_added: "0.2.0"
+
+  budgets:
+    path: [budgets]
+    summary: "Show budget progress"
+    description: |
+      Reports budgeted amounts and spending progress for the current period.
+    risk: read
+    status: planned
+    aliases: []
+    arguments: []
+    options: []
+    examples:
+      - sure budgets
+      - sure reports budgets --json
+    api:
+      method: get
+      path: "/api/v1/budgets"
+    version_added: "0.2.0"
+
+  reports:
+    path: [reports]
+    summary: "Alias group for top-level reporting commands"
+    description: |
+      Reaches the reporting commands (cashflow, balance-sheet, budgets) through
+      a reports noun group while keeping them available at the top level.
+    risk: read
+    status: planned
+    aliases: []
+    arguments:
+      - name: report
+        required: true
+        description: "Report name (cashflow, balance-sheet, or budgets)"
+    options: []
+    examples:
+      - sure reports cashflow
+      - sure reports balance-sheet --as-of 2026-10-31
+    api:
+      method: null
+      path: null
+    version_added: "0.2.0"

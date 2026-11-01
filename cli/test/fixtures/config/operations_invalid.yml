@@ -1,0 +1,5 @@
+# frozen_string_literal: true
+
+# Invalid catalog root: the loader requires a mapping with schema_version/commands.
+- schema_version: 1
+  commands: {}
