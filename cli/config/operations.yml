@@ -1,0 +1,189 @@
+schema_version: 1
+commands:
+  version:
+    path: [version]
+    summary: "Print the CLI version"
+    description: |
+      Prints the running Sure CLI version. Version output does not read config,
+      credentials, or the network, and never loads Rails.
+    risk: read
+    status: implemented
+    aliases: ["--version", "-v"]
+    arguments: []
+    options: []
+    examples:
+      - sure --version
+    api:
+      method: null
+      path: null
+    version_added: "0.1.0"
+
+  help:
+    path: [help]
+    summary: "Describe available commands or one specific command"
+    description: |
+      Prints the command tree or per-command help, including catalog-backed
+      examples. Help never reads config, credentials, or the network.
+    risk: read
+    status: implemented
+    aliases: []
+    arguments:
+      - name: command
+        required: false
+        description: "Command or subcommand to describe"
+    options: []
+    examples:
+      - sure help
+      - sure help auth login
+    api:
+      method: null
+      path: null
+    version_added: "0.1.0"
+
+  auth.login:
+    path: [auth, login]
+    summary: "Store an API key for a profile"
+    description: |
+      Validates the key against GET /api/v1/usage, then stores it in the OS
+      keychain or a 0600 credential file. The key is read from a hidden prompt,
+      --api-key-file, --api-key-stdin, or SURE_API_KEY; it is never accepted as
+      an argv flag.
+    risk: local_write
+    status: implemented
+    aliases: []
+    arguments: []
+    options:
+      - name: api-key-file
+        type: string
+        description: "Read the key from a file"
+      - name: api-key-stdin
+        type: boolean
+        description: "Read the key from stdin"
+      - name: server
+        type: string
+        description: "Sure server URL (base URL, not /api/v1)"
+    examples:
+      - sure auth login --server https://sure.example.com
+      - printf '%s' "$SURE_API_KEY" | sure auth login --api-key-stdin
+    api:
+      method: null
+      path: null
+    version_added: "0.1.0"
+
+  auth.logout:
+    path: [auth, logout]
+    summary: "Delete the stored credential for a profile"
+    description: |
+      Deletes the local credential and explains that the API key must be revoked
+      in Sure Settings -> API Keys. The public API has no revocation endpoint.
+    risk: local_write
+    status: implemented
+    aliases: []
+    arguments: []
+    options: []
+    examples:
+      - sure auth logout
+    api:
+      method: null
+      path: null
+    version_added: "0.1.0"
+
+  auth.status:
+    path: [auth, status]
+    summary: "Show the active profile and key metadata"
+    description: |
+      Reports the active profile, server URL, user, key name, scopes,
+      authentication method, and rate-limit tier. It never prints the key.
+    risk: read
+    status: implemented
+    aliases: []
+    arguments: []
+    options: []
+    examples:
+      - sure auth status
+      - sure auth status --json
+    api:
+      method: get
+      path: "/api/v1/usage"
+    version_added: "0.1.0"
+
+  api:
+    path: [api]
+    summary: "Call a Sure /api/v1 endpoint"
+    description: |
+      Issues an authenticated request against a Sure /api/v1 path through the
+      same redacted HTTP pipeline used by every command. Paths must start with
+      /api/v1; write methods require explicit confirmation.
+    risk: raw_write
+    status: implemented
+    aliases: []
+    arguments:
+      - name: method
+        required: true
+        description: "HTTP method (GET, POST, PUT, PATCH, DELETE)"
+      - name: path
+        required: true
+        description: "/api/v1 path, optionally with a query string"
+    options:
+      - name: data
+        type: string
+        description: "JSON request body"
+      - name: raw
+        type: boolean
+        description: "Print the exact response body"
+      - name: dry-run
+        type: boolean
+        description: "Print the request without sending it"
+      - name: "yes"
+        type: boolean
+        description: "Confirm a write request"
+    examples:
+      - sure api GET /api/v1/accounts
+      - sure api GET '/api/v1/accounts?per_page=5' --json
+    api:
+      method: null
+      path: "/api/v1/*"
+    version_added: "0.1.0"
+
+  doctor:
+    path: [doctor]
+    summary: "Check configuration, credentials, and connectivity"
+    description: |
+      Runs a non-short-circuiting checklist covering config permissions, server
+      URL, credential presence, connectivity, authentication, scope, server
+      capability, clock skew, and rate limits. Each failure includes a fix.
+    risk: read
+    status: implemented
+    aliases: []
+    arguments: []
+    options: []
+    examples:
+      - sure doctor
+      - sure doctor --json
+    api:
+      method: get
+      path: "/api/v1/usage"
+    version_added: "0.1.0"
+
+  completion:
+    path: [completion]
+    summary: "Generate shell completion from the command catalog"
+    description: |
+      Writes a static bash, zsh, or fish completion script derived from the
+      implemented catalog entries. It makes no network calls and contains no
+      secrets.
+    risk: read
+    status: implemented
+    aliases: []
+    arguments:
+      - name: shell
+        required: true
+        description: "Shell to generate completion for (bash, zsh, or fish)"
+    options: []
+    examples:
+      - sure completion bash
+      - sure completion zsh > ~/.zfunc/_sure
+    api:
+      method: null
+      path: null
+    version_added: "0.1.0"
