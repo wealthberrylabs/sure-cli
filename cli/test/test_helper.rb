@@ -26,7 +26,7 @@ module CLITestHelper
     Dir.mktmpdir("sure-test") do |dir|
       home = File.join(dir, "home")
       config_home = File.join(dir, "config")
-      FileUtils.mkdir_p([home, config_home])
+      FileUtils.mkdir_p([ home, config_home ])
 
       stdout = StringIO.new
       stderr = StringIO.new

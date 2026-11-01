@@ -98,7 +98,7 @@ module Sure
             if @application.subcommands.include?(name)
               paths.concat(subcommand_leaf_paths(name))
             else
-              paths << [name]
+              paths << [ name ]
             end
           end
           paths
@@ -110,7 +110,7 @@ module Sure
           next if sub_command.hidden?
           next if GENERATED_SUBCOMMANDS.include?(sub_name.to_s)
 
-          [name, sub_name.to_s]
+          [ name, sub_name.to_s ]
         end
       end
 

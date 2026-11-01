@@ -83,7 +83,7 @@ class CatalogTest < Minitest::Test
 
   def test_rejects_rm_alias
     commands = application_commands
-    commands["version"] = entry(%w[version], aliases: ["rm"])
+    commands["version"] = entry(%w[version], aliases: [ "rm" ])
 
     error = assert_raises(Sure::Errors::Error) do
       Sure::Catalog::Validator.validate!(build_catalog(commands), Sure::CLI::Application)
@@ -153,7 +153,7 @@ class CatalogTest < Minitest::Test
       "aliases" => [],
       "arguments" => [],
       "options" => [],
-      "examples" => ["sure #{path.join(' ')}"],
+      "examples" => [ "sure #{path.join(' ')}" ],
       "api" => { "method" => nil, "path" => nil },
       "version_added" => "0.1.0"
     }.merge(overrides.transform_keys(&:to_s))

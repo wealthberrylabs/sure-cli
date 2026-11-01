@@ -24,7 +24,7 @@ module Sure
         # appends the catalog-backed examples.
         def catalog_long_desc(id)
           entry = Sure::Catalog.fetch(id)
-          lines = [entry.description.strip]
+          lines = [ entry.description.strip ]
           unless entry.examples.empty?
             lines << ""
             lines << "Examples:"

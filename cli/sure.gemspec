@@ -5,7 +5,7 @@ require_relative "lib/sure/version"
 Gem::Specification.new do |spec|
   spec.name = "sure"
   spec.version = Sure::VERSION
-  spec.authors = ["Sure Contributors"]
+  spec.authors = [ "Sure Contributors" ]
   spec.summary = "Command-line interface for a Sure personal finance server"
   spec.description = <<~DESC
     A first-party command-line client for Sure. It talks to the existing
@@ -26,8 +26,8 @@ Gem::Specification.new do |spec|
   ].select { |path| File.file?(path) }
 
   spec.bindir = "exe"
-  spec.executables = ["sure"]
-  spec.require_paths = ["lib"]
+  spec.executables = [ "sure" ]
+  spec.require_paths = [ "lib" ]
 
   spec.add_dependency "csv", "~> 3.3.5"
   spec.add_dependency "faraday", "~> 2.14.3"
