@@ -143,7 +143,7 @@ module Sure
       end
 
       def delete_from_keychain(key)
-        return if keychain_store.nil?
+        return unless keychain_available?
 
         keychain_store.delete(key)
       rescue StoreError

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "sure"
+require_relative "fake_store"
 
 # An in-memory stand-in for a platform keychain. `available?` drives the
 # StoreFactory auto-detection path.

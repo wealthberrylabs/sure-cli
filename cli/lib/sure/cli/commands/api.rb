@@ -5,6 +5,7 @@ require "uri"
 
 require_relative "../context"
 require_relative "../runtime"
+require_relative "../../auth/scope_preflight"
 require_relative "../../errors"
 require_relative "../../output/result"
 
@@ -43,6 +44,10 @@ module Sure
 
           confirm_write!(verb, api_path) if write?(verb)
 
+          # A read-only key fails after confirmation but before any write
+          # request leaves the process (SAFE-06 / T-04-04).
+          preflight.ensure!(method: verb) if write?(verb)
+
           response = client.request(verb, api_path, body: body)
           render(response)
         end
@@ -55,6 +60,10 @@ module Sure
 
         def client
           @client ||= context.client
+        end
+
+        def preflight
+          @preflight ||= Sure::Auth::ScopePreflight.new(context)
         end
 
         def normalize_method(method)

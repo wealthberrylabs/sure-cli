@@ -23,6 +23,10 @@ require_relative "sure/auth/mac_keychain_store"
 require_relative "sure/auth/secret_service_store"
 require_relative "sure/auth/store_factory"
 require_relative "sure/auth/api_key_provider"
+require_relative "sure/auth/scope_preflight"
+require_relative "sure/auth/login"
+require_relative "sure/auth/logout"
+require_relative "sure/auth/status"
 require_relative "sure/cli"
 
 # Public namespace for the Sure command-line client.

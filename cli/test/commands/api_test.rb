@@ -105,6 +105,7 @@ class ApiCommandTest < Minitest::Test
   end
 
   def test_prompts_for_a_write_on_a_tty_and_sends_on_y
+    stub_usage_scopes("read_write")
     stub_request(:delete, "#{SERVER}/api/v1/accounts/1")
       .to_return(status: 204, headers: {}, body: "")
     stdin = FakeTTY.new("y\n")
@@ -118,6 +119,7 @@ class ApiCommandTest < Minitest::Test
   end
 
   def test_yes_sends_a_write_without_prompting
+    stub_usage_scopes("read_write")
     stub_request(:post, "#{SERVER}/api/v1/tags")
       .to_return(status: 201, headers: json_headers, body: '{"tag":{"id":1}}')
 
@@ -128,6 +130,17 @@ class ApiCommandTest < Minitest::Test
     assert_requested(:post, "#{SERVER}/api/v1/tags") do |request|
       JSON.parse(request.body) == { "tag" => { "name" => "trip" } }
     end
+  end
+
+  def test_a_read_only_environment_key_blocks_a_write_before_the_target_request
+    stub_usage_scopes("read")
+
+    result = run_cli("api", "POST", "/api/v1/tags", "--data", "{}", "--yes",
+                     "--server", SERVER, env: ENV_KEY)
+
+    assert_equal 3, result.status
+    assert_includes result.stderr, "read_write"
+    assert_not_requested :post, "#{SERVER}/api/v1/tags"
   end
 
   def test_dry_run_makes_no_request_and_reads_no_credential
@@ -209,6 +222,12 @@ class ApiCommandTest < Minitest::Test
   end
 
   private
+
+  def stub_usage_scopes(scope)
+    stub_request(:get, "#{SERVER}/api/v1/usage")
+      .to_return(status: 200, headers: json_headers,
+                 body: JSON.generate({ "api_key" => { "scopes" => [ scope ] } }))
+  end
 
   def json_headers
     { "Content-Type" => "application/json" }
