@@ -73,6 +73,24 @@ module Sure
       result.gsub(HEX_KEY_PATTERN, REDACTED)
     end
 
+    # Deep walk over a parsed JSON value so structured output is masked with the
+    # same rules as `--raw` bodies and error details. Keys and non-string
+    # scalars pass through untouched; only string leaves are candidates.
+    def redact_tree(value)
+      case value
+      when Hash
+        value.each_with_object({}) do |(key, item), result|
+          result[key] = redact_tree(item)
+        end
+      when Array
+        value.map { |item| redact_tree(item) }
+      when String
+        redact_value(value)
+      else
+        value
+      end
+    end
+
     # Copies an environment hash without the variables a child process must
     # never inherit.
     def scrub_env(env)

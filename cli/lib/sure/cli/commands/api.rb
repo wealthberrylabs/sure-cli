@@ -175,7 +175,10 @@ module Sure
 
           context.selector.render(
             Output::Result.new(
-              data: response.body,
+              # Structured output is masked with the same rules as --raw: the
+              # server is free to echo a credential in any field, and JSON is
+              # the default for non-TTY callers.
+              data: client.redactor.redact_tree(response.body),
               meta: {
                 http_status: response.status,
                 request_id: response.request_id,

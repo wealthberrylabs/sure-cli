@@ -168,6 +168,23 @@ class ApiCommandTest < Minitest::Test
     refute_includes result.stdout, "tok_live_abc123"
   end
 
+  def test_structured_output_is_redacted_in_every_format
+    body = '{"accounts":[{"id":"a1","note":"tok_live_abc123","meta":{"tags":["tok_live_abc123"]}}]}'
+
+    %w[--json --table --csv --ndjson].each do |format|
+      stub_request(:get, "#{SERVER}/api/v1/accounts")
+        .to_return(status: 200, headers: json_headers, body: body)
+
+      result = run_cli("api", "GET", "/api/v1/accounts", format, "--server", SERVER,
+                       env: { "SURE_API_KEY" => "tok_live_abc123" })
+
+      assert_equal 0, result.status, "#{format} exited #{result.status}: #{result.stdout}"
+      refute_includes result.stdout, "tok_live_abc123",
+                      "#{format} leaked the active credential"
+      assert_includes result.stdout, "[REDACTED]", "#{format} did not mask the credential"
+    end
+  end
+
   def test_preserves_the_server_path_prefix
     stub_request(:get, "#{SERVER}/sure/api/v1/accounts")
       .to_return(status: 200, headers: json_headers, body: api_fixture("accounts"))

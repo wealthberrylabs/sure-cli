@@ -187,16 +187,7 @@ module Sure
       end
 
       def redact_details(value)
-        case value
-        when Hash
-          value.each_with_object({}) { |(key, item), result| result[key] = redact_details(item) }
-        when Array
-          value.map { |item| redact_details(item) }
-        when String
-          redact(value)
-        else
-          value
-        end
+        @redactor.redact_tree(value)
       end
 
       def header(headers, name)
