@@ -92,9 +92,14 @@ module Sure
         credential.first
       end
 
-      # :environment, :keychain, or :file.
+      # :environment, :keychain, or :file. Determined without reading the secret
+      # a second time: status and preflight need only the source, not its value.
       def credential_source
-        @credential_source ||= credential.last == :environment ? :environment : store.mode
+        @credential_source ||= if runtime.env[Auth::ApiKeyProvider::ENV_KEY].nil?
+          store.mode
+        else
+          :environment
+        end
       end
 
       # Environment keys can change between commands, so cached scopes from the
