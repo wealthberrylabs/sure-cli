@@ -144,11 +144,13 @@ class ApiKeyProviderTest < Minitest::Test
     assert_equal 16, key.origin_fingerprint.length
   end
 
-  def test_credential_key_ignores_default_ports_and_paths
+  def test_credential_key_ignores_default_ports_but_not_path_prefixes
     with_port = Sure::Auth::CredentialKey.new(profile: "p", origin: "https://host:443/sure")
-    without_port = Sure::Auth::CredentialKey.new(profile: "p", origin: "https://host/other")
+    without_port = Sure::Auth::CredentialKey.new(profile: "p", origin: "https://host/sure")
+    other_path = Sure::Auth::CredentialKey.new(profile: "p", origin: "https://host/other")
 
     assert_equal without_port.account, with_port.account
+    refute_equal without_port.account, other_path.account
   end
 
   def test_null_store_is_a_safe_read_miss_and_fails_writes_loudly

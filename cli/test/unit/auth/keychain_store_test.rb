@@ -19,7 +19,7 @@ class KeychainStoreTest < Minitest::Test
     credential = Sure::Auth::MacKeychainStore.new(runner: @runner).read(@key)
 
     assert_equal "#{SECRET}\n", credential.secret
-    assert_equal "https://sure.example.com", credential.server_url
+    assert_equal "https://sure.example.com/sure", credential.server_url
   end
 
   def test_mac_read_returns_nil_when_the_item_is_absent

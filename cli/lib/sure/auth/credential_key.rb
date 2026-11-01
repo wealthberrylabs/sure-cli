@@ -5,9 +5,11 @@ require "uri"
 
 module Sure
   module Auth
-    # Stable, origin-scoped identity for a stored credential. The fingerprint
-    # keeps credentials for two servers from overwriting each other while never
-    # putting the server URL or the secret in a keychain account name.
+    # Stable identity for a stored credential, scoped to the scheme, host, port,
+    # and path prefix the profile targets. The fingerprint keeps credentials for
+    # two servers — including two tenants mounted on one origin — from
+    # overwriting each other while never putting the server URL or the secret in
+    # a keychain account name.
     class CredentialKey
       SERVICE = "sure-cli"
 
@@ -41,15 +43,18 @@ module Sure
 
       private
 
+      # The path prefix is part of the identity: `https://host/tenant-a` and
+      # `https://host/tenant-b` are different deployments. A trailing slash is
+      # not, so `/sure` and `/sure/` name the same credential.
       def normalize_origin(value)
         uri = URI.parse(value.to_s)
         scheme = uri.scheme.to_s.downcase
         host = uri.host.to_s.downcase
         port = uri.port
         default_port = scheme == "https" ? 443 : 80
-        return "#{scheme}://#{host}" if port.nil? || port == default_port
-
-        "#{scheme}://#{host}:#{port}"
+        port_suffix = port.nil? || port == default_port ? "" : ":#{port}"
+        prefix = uri.path.to_s.sub(%r{/+\z}, "")
+        "#{scheme}://#{host}#{port_suffix}#{prefix}"
       rescue URI::InvalidURIError
         value.to_s
       end

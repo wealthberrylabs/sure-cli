@@ -37,19 +37,40 @@ module Sure
         end
       end
 
-      # Refuse to send the key anywhere except the configured server origin,
-      # even if a future caller passes an absolute URL by mistake.
+      # Refuse to send the key anywhere except the configured server, including
+      # its path prefix, even if a future caller passes an absolute URL by
+      # mistake or a redirect is attempted.
       def ensure_same_origin!(url)
         return if same_origin?(url)
 
         raise Sure::Errors::UsageError,
-              "refusing to send the API key to #{url.host.inspect}; expected #{expected_origin}"
+              "refusing to send the API key to #{url.host.inspect}; " \
+              "expected #{expected_destination}"
       end
 
       def same_origin?(url)
         return false unless url.is_a?(URI::Generic)
+        return false unless origin_of(url) == expected_origin
 
-        origin_of(url) == expected_origin
+        path_within_prefix?(url.path)
+      end
+
+      # The profile's base path, without a trailing slash. Empty for a root
+      # deployment. Compares a prefix rather than the request's full path so a
+      # root profile still reaches every endpoint.
+      def path_prefix
+        @path_prefix ||= begin
+          path = URI.parse(@profile.server_url.to_s).path.to_s
+          path.sub(%r{/+\z}, "")
+        end
+      end
+
+      def path_within_prefix?(path)
+        prefix = path_prefix
+        return true if prefix.empty?
+
+        candidate = path.to_s
+        candidate == prefix || candidate.start_with?("#{prefix}/")
       end
 
       def expected_origin
@@ -57,6 +78,10 @@ module Sure
           server = URI.parse(@profile.server_url.to_s)
           origin_of(server)
         end
+      end
+
+      def expected_destination
+        "#{expected_origin}#{path_prefix}"
       end
 
       def origin_of(uri)
