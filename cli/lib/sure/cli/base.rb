@@ -40,7 +40,7 @@ module Sure
         end
 
         def context
-          Context.current
+          @context ||= Context.current(runtime, options: options)
         end
       end
     end

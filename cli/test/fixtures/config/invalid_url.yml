@@ -1,0 +1,5 @@
+schema_version: 1
+default_profile: default
+profiles:
+  default:
+    server_url: https://sure.example.com/api/v1
