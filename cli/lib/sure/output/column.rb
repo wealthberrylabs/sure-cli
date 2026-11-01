@@ -13,7 +13,7 @@ module Sure
 
         super(
           key: key.to_s,
-          label: (label || humanize(key)).to_s,
+          label: (label || self.class.humanize(key)).to_s,
           align: align,
           formatter: formatter
         )

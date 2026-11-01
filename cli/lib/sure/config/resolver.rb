@@ -14,7 +14,7 @@ module Sure
     class Resolver
       TRUE_VALUES = %w[1 true yes on].freeze
       FALSE_VALUES = %w[0 false no off].freeze
-      OUTPUTS = %w[table json].freeze
+      OUTPUTS = %w[table json csv ndjson].freeze
       INSECURE_WARNING =
         "warning: TLS verification is disabled; the connection can be intercepted"
 

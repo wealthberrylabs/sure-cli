@@ -24,8 +24,11 @@ module Sure
         class_option :server, type: :string, desc: "Sure server URL (base URL, not /api/v1)"
         class_option :json, type: :boolean, desc: "Emit a stable JSON envelope"
         class_option :table, type: :boolean, desc: "Emit a human-readable table"
+        class_option :csv, type: :boolean, desc: "Emit CSV"
+        class_option :ndjson, type: :boolean, desc: "Emit one JSON object per line"
+        class_option :fields, type: :string, desc: "Comma-separated fields to include"
 
-        class_exclusive :json, :table
+        class_exclusive :json, :table, :csv, :ndjson
 
         desc "login", Sure::Catalog.fetch("auth.login").summary
         long_desc catalog_long_desc("auth.login")

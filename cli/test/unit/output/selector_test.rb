@@ -48,11 +48,25 @@ class SelectorTest < Minitest::Test
 
   def test_rejects_unsupported_formats
     assert_raises(Sure::Errors::UsageError) do
-      build(env: { "SURE_OUTPUT" => "csv" }).format
+      build(env: { "SURE_OUTPUT" => "yaml" }).format
     end
-    assert_raises(Sure::Errors::UsageError) do
-      build(options: { csv: true }).format
+  end
+
+  def test_accepts_csv_and_ndjson
+    assert_equal :csv, build(options: { csv: true }).format
+    assert_equal :ndjson, build(options: { ndjson: true }).format
+    assert_equal :csv, build(env: { "SURE_OUTPUT" => "csv" }).format
+    assert_equal :ndjson, build(env: { "SURE_OUTPUT" => "ndjson" }).format
+    assert_kind_of Sure::Output::Csv, build(options: { csv: true }).formatter
+    assert_kind_of Sure::Output::Ndjson, build(options: { ndjson: true }).formatter
+  end
+
+  def test_rejects_multiple_output_flags
+    error = assert_raises(Sure::Errors::UsageError) do
+      build(options: { json: true, csv: true }).format
     end
+
+    assert_includes error.message, "mutually exclusive"
   end
 
   def test_color_requires_a_tty_and_no_opt_out

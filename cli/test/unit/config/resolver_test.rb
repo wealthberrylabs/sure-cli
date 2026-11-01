@@ -262,14 +262,16 @@ class ResolverTest < Minitest::Test
     end
   end
 
-  def test_sure_output_accepts_json_and_rejects_yaml
+  def test_sure_output_accepts_every_machine_format_and_rejects_yaml
     with_temp_config_home do |env|
       paths = paths_for(env)
       write_config(paths, config_for("default"))
 
-      profile = build_resolver(paths, env.merge("SURE_OUTPUT" => "json"), {}).resolve
-      assert_equal :json, profile.output
-      assert_equal :environment, profile.sources[:output]
+      %w[json csv ndjson].each do |format|
+        profile = build_resolver(paths, env.merge("SURE_OUTPUT" => format), {}).resolve
+        assert_equal format.to_sym, profile.output
+        assert_equal :environment, profile.sources[:output]
+      end
 
       error = assert_raises(Sure::Errors::UsageError) do
         build_resolver(paths, env.merge("SURE_OUTPUT" => "yaml"), {}).resolve

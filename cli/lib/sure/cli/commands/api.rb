@@ -137,9 +137,13 @@ module Sure
         def reject_conflicting_output!
           return unless flag?(:raw)
 
-          if flag?(:json) || flag?(:table)
-            raise Errors::UsageError, "--raw cannot be combined with --json or --table"
+          if flag?(:json) || flag?(:table) || flag?(:csv) || flag?(:ndjson)
+            raise Errors::UsageError,
+                  "--raw cannot be combined with --json, --table, --csv, or --ndjson"
           end
+          return unless options_provided?(:fields)
+
+          raise Errors::UsageError, "--raw cannot be combined with --fields"
         end
 
         def dry_run(verb, api_path, body)

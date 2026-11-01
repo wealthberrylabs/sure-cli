@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
 require_relative "../errors"
+require_relative "csv"
 require_relative "json"
+require_relative "ndjson"
 require_relative "table"
 
 module Sure
   module Output
     # Chooses one formatter for the command. Precedence is explicit flags,
     # SURE_OUTPUT, the profile's output setting, then TTY detection (D-11).
-    # CSV/NDJSON/--fields belong to Plan 01-05 and are not accepted here yet.
     class Selector
-      FORMATS = %i[json table].freeze
-      UNSUPPORTED_OPTIONS = %i[csv ndjson fields].freeze
+      FORMATS = %i[json table csv ndjson].freeze
+      FLAGS = %i[json table csv ndjson].freeze
 
       def initialize(options: {}, env: {}, profile: nil, stdout: $stdout, stderr: nil, clock: Time)
         @options = options || {}
@@ -30,13 +31,15 @@ module Sure
 
       def formatter
         @formatter ||= case format
-        when :json then Json.new(clock: clock)
-        when :table then Table.new(color: color?)
+        when :json then Json.new(clock: clock, quiet: quiet?)
+        when :table then Table.new(color: color?, quiet: quiet?)
+        when :csv then Csv.new(quiet: quiet?)
+        when :ndjson then Ndjson.new(quiet: quiet?)
         end
       end
 
       def render(result, fields: nil)
-        formatter.render(result, io: stdout, stderr: stderr, fields: fields)
+        formatter.render(result, io: stdout, stderr: stderr, fields: fields || option(:fields))
       end
 
       def color?
@@ -63,20 +66,12 @@ module Sure
       private
 
       def resolve_format
-        json = truthy?(option(:json))
-        table = truthy?(option(:table))
-
-        raise Errors::UsageError, "--json and --table are mutually exclusive" if json && table
-
-        return :json if json
-        return :table if table
-
-        UNSUPPORTED_OPTIONS.each do |name|
-          next unless truthy?(option(name))
-
+        selected = FLAGS.select { |name| truthy?(option(name)) }
+        if selected.length > 1
           raise Errors::UsageError,
-                "--#{name.to_s.tr('_', '-')} is not supported yet; use --json or --table"
+                "--#{selected.join(', --')} are mutually exclusive"
         end
+        return selected.first unless selected.empty?
 
         from_env = env["SURE_OUTPUT"].to_s.strip.downcase
         return validate!(from_env) unless from_env.empty?
@@ -92,7 +87,7 @@ module Sure
         return symbol if FORMATS.include?(symbol)
 
         raise Errors::UsageError,
-              "unsupported output format #{value.inspect}; use `json` or `table`"
+              "unsupported output format #{value.inspect}; use one of #{FORMATS.join(', ')}"
       end
 
       def option(name)

@@ -6,6 +6,7 @@ require "time"
 require_relative "../http/pagination"
 require_relative "../http/rate_limit"
 require_relative "base"
+require_relative "field_selection"
 
 module Sure
   module Output
@@ -17,15 +18,18 @@ module Sure
       NON_FINITE_WARNING = "non-finite numbers were replaced with null"
       RESERVED_META_KEYS = %w[schema_version as_of warnings].freeze
 
-      def initialize(clock: Time)
-        super()
+      def initialize(clock: Time, quiet: false)
+        super(quiet: quiet)
         @clock = clock
       end
 
       def render(result, io:, fields: nil, stderr: nil)
         warnings = []
         data = normalize(result.data, warnings)
-        data = project(data, fields) if fields
+        if fields
+          selection = fields.is_a?(FieldSelection) ? fields : FieldSelection.new(fields)
+          data = apply_selection(data, selection, result)
+        end
 
         meta = build_meta(result.meta, warnings)
 
@@ -35,6 +39,54 @@ module Sure
       end
 
       private
+
+      COLLECTION_KEYS = %w[
+        accounts transactions budgets rules holdings transfers tags items results data records checks
+      ].freeze
+
+      def apply_selection(data, selection, result)
+        if result.columns
+          selection.validate!(Array(result.columns).map(&:key))
+          return selection.apply(data)
+        end
+
+        if data.is_a?(Hash) && (collection = collection_value(data))
+          selection.validate!(collection_fields(collection))
+          return data.each_with_object({}) do |(key, value), projected|
+            projected[key] = key.to_s == collection_key(data) ? collection.map { |item| selection.apply(item) } : value
+          end
+        end
+
+        selection.validate!(available_fields(data))
+        selection.apply(data)
+      end
+
+      def collection_key(data)
+        known = data.keys.find { |key| COLLECTION_KEYS.include?(key.to_s) && data[key].is_a?(Array) }
+        return known unless known.nil?
+
+        return nil unless data.key?("pagination") || data.key?(:pagination) || data.key?("meta") || data.key?(:meta)
+
+        data.keys.find { |name| data[name].is_a?(Array) }
+      end
+
+      def collection_value(data)
+        key = collection_key(data)
+        key.nil? ? nil : data[key]
+      end
+
+      def collection_fields(collection)
+        Array(collection).flat_map { |item| item.is_a?(Hash) ? item.keys.map(&:to_s) : [] }.uniq
+      end
+
+      def available_fields(data)
+        case data
+        when Hash then data.keys.map(&:to_s)
+        when Array
+          data.flat_map { |item| item.is_a?(Hash) ? item.keys.map(&:to_s) : [] }.uniq
+        else []
+        end
+      end
 
       def build_meta(source, warnings)
         meta = stringify(source || {})

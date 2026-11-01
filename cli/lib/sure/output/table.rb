@@ -3,6 +3,7 @@
 require "terminal-table"
 
 require_relative "base"
+require_relative "field_selection"
 
 module Sure
   module Output
@@ -11,19 +12,18 @@ module Sure
     # raising on an unexpected shape.
     class Table < Base
       COLLECTION_KEYS = %w[
-        accounts transactions budgets rules holdings transfers tags items results data records
+        accounts transactions budgets rules holdings transfers tags items results data records checks
       ].freeze
 
-      def initialize(color: false)
-        super()
+      def initialize(color: false, quiet: false)
+        super(quiet: quiet)
         @color = color
       end
 
       attr_reader :color
 
       def render(result, io:, fields: nil, stderr: nil)
-        headings, rows = frame(result)
-        headings, rows = select_fields(headings, rows, fields) if fields
+        result, headings, rows = frame(result, fields)
 
         io.puts(build_table(headings, rows, result.columns).render)
         io.puts(result.footer) unless result.footer.nil? || result.footer.to_s.empty?
@@ -32,10 +32,36 @@ module Sure
 
       private
 
-      def frame(result)
-        return explicit_frame(result) unless result.columns.nil?
+      def frame(result, fields)
+        selection = fields.nil? || fields.is_a?(FieldSelection) ? fields : FieldSelection.new(fields)
 
-        infer_frame(result.data)
+        if result.columns
+          columns = filter_columns(Array(result.columns), selection)
+          filtered = Output::Result.new(
+            data: result.data,
+            meta: result.meta,
+            columns: columns,
+            footer: result.footer
+          )
+          headings, rows = explicit_frame(filtered)
+          return [ filtered, headings, rows ]
+        end
+
+        headings, rows = infer_frame(result.data)
+        if selection
+          indexes = selection.indexes(headings)
+          headings = indexes.map { |index| headings[index] }
+          rows = rows.map { |row| indexes.map { |index| row[index] } }
+        end
+        [ result, headings, rows ]
+      end
+
+      def filter_columns(columns, selection)
+        return columns if selection.nil?
+
+        available = columns.flat_map { |column| [ column.key, column.label ] }
+        selection.validate!(available)
+        columns.select { |column| selection.include?(column.key) || selection.include?(column.label) }
       end
 
       def explicit_frame(result)
@@ -110,16 +136,6 @@ module Sure
         return item[key.to_sym] if item.key?(key.to_sym)
 
         nil
-      end
-
-      def select_fields(headings, rows, fields)
-        names = Array(fields).map(&:to_s)
-        indexes = headings.each_index.select { |index| names.include?(headings[index].to_s.downcase) }
-        indexes = headings.each_index.select do |index|
-          names.include?(Column.humanize(headings[index]).downcase)
-        end if indexes.empty?
-
-        [ indexes.map { |index| headings[index] }, rows.map { |row| indexes.map { |index| row[index] } } ]
       end
 
       def build_table(headings, rows, columns = nil)
