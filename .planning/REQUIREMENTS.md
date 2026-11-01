@@ -18,7 +18,7 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 - [x] **FOUND-07**: User gets deterministic exit codes, errors on stderr, and no Ruby backtraces for expected failures.
 - [x] **FOUND-08**: User can run `sure doctor` to check connectivity, auth, scope, TLS, clock skew, config permissions, and server compatibility.
 - [x] **FOUND-09**: User can call any endpoint through `sure api METHOD PATH` with normal auth, tenancy, and redaction.
-- [ ] **FOUND-10**: User can install bash, zsh, and fish completion generated from the command catalog.
+- [x] **FOUND-10**: User can install bash, zsh, and fish completion generated from the command catalog.
 
 ### Authentication
 

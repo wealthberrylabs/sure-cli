@@ -19,7 +19,7 @@ behalf of the web platform.
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation & API-Key Authentication** - Installable gem, profiles, HTTP pipeline, credential store, doctor (verification gaps found 2026-11-01)
+- [x] **Phase 1: Foundation & API-Key Authentication** - Installable gem, profiles, HTTP pipeline, credential store, doctor (verification gaps found 2026-11-01) (completed 2026-11-01)
 - [ ] **Phase 2: Read & Report** - Accounts, transactions, cash flow, balance sheet, budgets, holdings
 - [ ] **Phase 3: Safe Writes** - Guarded transaction mutations, splits, tags, recurring, valuations, trades
 - [ ] **Phase 4: Imports, Sync & Exports** - Preflight, CSV import, chunked sessions, sync, async exports
@@ -44,7 +44,7 @@ behalf of the web platform.
   4. `sure doctor` diagnoses a bad URL, key, or TLS setting and exits nonzero with an actionable message.
   5. `sure api GET /api/v1/accounts` works, and secrets never appear in output, logs, or debug traces.
 
-**Plans:** 8/9 plans executed
+**Plans:** 9/9 plans complete
 
 Plans:
 **Wave 1**
@@ -72,7 +72,7 @@ Plans:
 - [x] 01-06: Normalize leading global options before Thor dispatch (gap 2 / CR-02)
 - [x] 01-07: Hidden-prompt login, TLS settings, secret-length enforcement, strict `/usage` validation (gaps 1 & 3 / CR-01, CR-03, WR-02, WR-03, WR-04, WR-06)
 - [x] 01-08: Path-scoped credential identity and keychain-miss fallback (gap 4 / CR-04, WR-01)
-- [ ] 01-09: Guarded zsh completion script (gap 5 / CR-05)
+- [x] 01-09: Guarded zsh completion script (gap 5 / CR-05)
 
 ### Phase 2: Read & Report
 
@@ -246,7 +246,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & API-Key Authentication | 8/9 | In Progress|  |
+| 1. Foundation & API-Key Authentication | 9/9 | Complete   | 2026-11-01 |
 | 2. Read & Report | 0/5 | Not started | - |
 | 3. Safe Writes | 0/5 | Not started | - |
 | 4. Imports, Sync & Exports | 0/5 | Not started | - |

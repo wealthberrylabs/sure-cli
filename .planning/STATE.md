@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-08-PLAN.md
-last_updated: "2026-11-01T17:35:53.596Z"
+stopped_at: Completed 01-09-PLAN.md
+last_updated: "2026-11-01T17:38:32.791Z"
 last_activity: 2026-11-01
 progress:
   total_phases: 8
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 9
-  completed_plans: 8
-  percent: 0
+  completed_plans: 9
+  percent: 13
 ---
 
 # Project State
@@ -25,30 +25,30 @@ See: .planning/PROJECT.md (updated 2026-10-31)
 
 ## Current Position
 
-Phase: 01 (Foundation & API-Key Authentication) — GAP CLOSURE IN PROGRESS
-Plan: 8 of 9 executed; 01-09 awaits execution
-Status: Ready to execute
+Phase: 01 (Foundation & API-Key Authentication) — COMPLETE, READY FOR RE-VERIFICATION
+Plan: 9 of 9 executed; 01-09 gap-closure plan complete
+Status: Phase complete — ready for verification
 Last activity: 2026-11-01
 
-Progress: [█████████░] 89%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 7
+- Total plans completed: 9
 - Average duration: 7 min
-- Total execution time: 0 hours 52 min
+- Total execution time: 1 hour 3 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 7 of 9 | 52 min | 7 min |
+| 01 | 9 of 9 | 63 min | 7 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-03 (7 min), 01-04 (15 min), 01-05 (9 min), 01-06 (3 min), 01-07 (5 min)
+- Last 5 plans: 01-05 (9 min), 01-06 (3 min), 01-07 (5 min), 01-08 (4 min), 01-09 (7 min)
 - Trend: the output/doctor/completion slice stayed near the phase average; gap-closure plans are short and targeted
 
 *Updated after each plan completion*
@@ -63,6 +63,7 @@ Progress: [█████████░] 89%
 | 01-06 | 3 min | 2 | 4 |
 | 01-07 | 5 min | 3 | 9 |
 | Phase 01 P08 | 4 min | 2 tasks | 9 files |
+| Phase 01 P09 | 7 min | 1 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Credential identity includes the normalized server path prefix — Two tenants on one origin must never share a keychain account; a trailing slash is normalized away and root-URL accounts stay byte-identical
 - [Phase 01]: AuthMiddleware pins X-Api-Key to the origin plus a path prefix at a segment boundary — A redirect or mismatched prefix must never receive the stored key, while a root profile still reaches every endpoint
 - [Phase 01]: A nil keychain read is a miss, so reads and logout consult the 0600 file copy — A file-stored credential must stay usable and logout must report deleted truthfully
+- [Phase 01]: The zsh completion keeps its wrapper and adds one funcstack guard, so the same generated file works autoloaded from fpath and sourced from .zshrc
 
 ### Pending Todos
 
@@ -130,8 +132,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-01T17:35:41.647Z
-Stopped at: Completed 01-08-PLAN.md
+Last session: 2026-11-01T17:38:27.491Z
+Stopped at: Completed 01-09-PLAN.md
 Resume file: None
 
-**Next step:** Run `/gsd-execute-phase 1 --gaps-only` to execute the remaining gap-closure plan (01-09), then re-verify phase 1.
+**Next step:** Re-verify phase 1 (`/gsd-verify-phase 1`) — all nine plans, including both gap-closure plans, are complete. Run the zsh parse/source assertions on a host with zsh installed.
