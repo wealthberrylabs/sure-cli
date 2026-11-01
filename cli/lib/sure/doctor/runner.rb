@@ -244,7 +244,7 @@ module Sure
         usage = state[:usage]
         return skip(:clock, "no response to read the Date header from") if usage.nil?
 
-        headers = usage.is_a?(HTTP::Response) ? usage.headers : usage.headers
+        headers = usage.headers
         raw = header_value(headers, "Date")
         return skip(:clock, "the server did not send a Date header") if raw.nil? || raw.to_s.empty?
 
