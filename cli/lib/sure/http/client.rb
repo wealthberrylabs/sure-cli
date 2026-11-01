@@ -34,6 +34,11 @@ module Sure
         request("GET", path, query: query)
       end
 
+      # Fully joined URL without sending anything. Used by `--dry-run`.
+      def url_for(path, query: nil)
+        build_url(path, query: query)
+      end
+
       def request(method, path, body: nil, query: nil)
         verb = method.to_s.upcase
         url = build_url(path, query: query)

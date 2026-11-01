@@ -182,6 +182,28 @@ class ClientTest < Minitest::Test
     assert_equal "", response.body.to_s
   end
 
+  def test_rate_limit_parser_tolerates_missing_and_infinite_values
+    assert_equal 120, Sure::HTTP::RateLimit.parse({ "X-RateLimit-Reset" => "120" }).reset_in_seconds
+    assert_nil Sure::HTTP::RateLimit.parse({ "X-RateLimit-Reset" => "" }).reset_in_seconds
+    assert_nil Sure::HTTP::RateLimit.parse({ "X-RateLimit-Reset" => "Infinity" }).reset_in_seconds
+    assert_nil Sure::HTTP::RateLimit.parse({}).limit
+    assert Sure::HTTP::RateLimit.parse({ "X-RateLimit-Limit" => "Infinity" }).unlimited?
+    assert Sure::HTTP::RateLimit.parse({}, tier: "noop").unlimited?
+  end
+
+  def test_raise_error_does_not_attach_request_headers_to_exceptions
+    stub_request(:get, ACCOUNTS_URL)
+      .to_return(status: 401, headers: json_headers, body: api_fixture("error_401"))
+    connection = Sure::HTTP::Connection.build(
+      profile: Sure::Config::Profile.new(name: "default", server_url: SERVER),
+      auth_provider: CountingProvider.new("test-key")
+    )
+
+    error = assert_raises(Faraday::UnauthorizedError) { connection.get(ACCOUNTS_URL) }
+
+    refute error.response.key?(:request)
+  end
+
   private
 
   def build_client(server: SERVER, secret: "test-key", verbose: false, stderr: nil)

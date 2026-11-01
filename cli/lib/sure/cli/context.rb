@@ -2,7 +2,10 @@
 
 require_relative "../auth/api_key_provider"
 require_relative "../config"
+require_relative "../http/client"
 require_relative "../http/url_builder"
+require_relative "../output/selector"
+require_relative "../redactor"
 require_relative "runtime"
 
 module Sure
@@ -43,13 +46,45 @@ module Sure
         @url_builder ||= HTTP::UrlBuilder.new(profile.server_url, stderr: runtime.stderr)
       end
 
+      def redactor
+        @redactor ||= Redactor.new
+      end
+
+      def auth_provider
+        @auth_provider ||= Auth::ApiKeyProvider.new(env: runtime.env, store: store)
+      end
+
+      # Exactly one client per command. It never reads the credential until a
+      # request is actually sent, so `--dry-run` stays network- and key-free.
+      def client
+        @client ||= HTTP::Client.new(
+          profile: profile,
+          auth_provider: auth_provider,
+          url_builder: url_builder,
+          runtime: runtime,
+          redactor: redactor,
+          verbose: truthy_option(:verbose)
+        )
+      end
+
+      def selector
+        @selector ||= Output::Selector.new(
+          options: options,
+          env: runtime.env,
+          profile: profile,
+          stdout: runtime.stdout,
+          stderr: runtime.stderr,
+          clock: runtime.clock
+        )
+      end
+
       def output_format
         @output_format ||= profile.output || (tty? ? :table : :json)
       end
 
       # [secret, :environment | :store]; normally used through #api_key.
       def credential
-        @credential ||= Auth::ApiKeyProvider.new(env: runtime.env, store: store).fetch(profile)
+        @credential ||= auth_provider.fetch(profile)
       end
 
       def api_key
@@ -77,6 +112,11 @@ module Sure
 
       def tty?
         runtime.stdout.respond_to?(:tty?) && runtime.stdout.tty?
+      end
+
+      def truthy_option(name)
+        value = options[name] || options[name.to_s]
+        value == true || value.to_s.match?(/\A(?:1|true|yes|on)\z/i)
       end
     end
   end

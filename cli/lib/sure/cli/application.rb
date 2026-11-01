@@ -78,8 +78,12 @@ module Sure
 
       desc "api METHOD PATH", Sure::Catalog.fetch("api").summary
       long_desc catalog_long_desc("api")
+      option :data, type: :string, desc: "JSON request body"
+      option :raw, type: :boolean, desc: "Print the exact response body (still redacted)"
+      option :dry_run, type: :boolean, desc: "Print the request without sending it"
+      option :yes, type: :boolean, desc: "Confirm a write request"
       def api(method, path)
-        Commands::Api.new.call(method, path)
+        Commands::Api.new(runtime: runtime, options: options).call(method, path)
       end
 
       desc "completion SHELL", Sure::Catalog.fetch("completion").summary
