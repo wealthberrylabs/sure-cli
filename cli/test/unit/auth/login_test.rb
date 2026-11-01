@@ -6,6 +6,12 @@ require_relative "../../support/local_http_server"
 require_relative "../../support/fake_keychain"
 require_relative "../../support/fake_store"
 
+begin
+  require "pty"
+rescue LoadError
+  nil
+end
+
 class LoginTest < Minitest::Test
   include TempConfig
 
@@ -141,6 +147,99 @@ class LoginTest < Minitest::Test
     end
   end
 
+  def test_a_tty_without_hidden_input_refuses_to_read_a_secret
+    with_temp_config_home do |env, _home, _xdg|
+      stdin = OpaqueTTY.new
+      runtime = build_runtime(env: env, stdin: stdin)
+
+      error = assert_raises(Sure::Errors::UsageError) do
+        Sure::Auth::Login.new(
+          runtime: runtime, options: { server: "https://sure.example.com" }
+        ).call
+      end
+
+      assert_includes error.message, "cannot read a hidden API key"
+      assert_includes error.message, "--api-key-file"
+      assert_equal 0, stdin.gets_calls
+      refute_includes runtime.stdout.string, "API key"
+    end
+  end
+
+  def test_a_three_byte_key_from_stdin_exits_two_without_echoing_it
+    with_temp_config_home do |env, _home, xdg|
+      runtime = build_runtime(env: env, stdin: StringIO.new("zq7"))
+
+      error = assert_raises(Sure::Errors::UsageError) do
+        Sure::Auth::Login.new(
+          runtime: runtime,
+          options: { server: "https://sure.example.com", api_key_stdin: true }
+        ).call
+      end
+
+      assert_equal Sure::Errors::ExitCodes::USAGE, error.exit_code
+      assert_includes error.message, "at least 4 bytes"
+      refute_includes error.message, "zq7"
+      refute File.exist?(File.join(xdg, "sure", "config.yml"))
+      refute File.exist?(File.join(xdg, "sure", "credentials.json"))
+    end
+  end
+
+  def test_a_three_byte_key_file_exits_two_without_echoing_it
+    with_temp_config_home do |env, home, xdg|
+      path = File.join(home, "short.txt")
+      File.write(path, "zq7\n")
+      File.chmod(0o600, path)
+      runtime = build_runtime(env: env)
+
+      error = assert_raises(Sure::Errors::UsageError) do
+        Sure::Auth::Login.new(
+          runtime: runtime,
+          options: { server: "https://sure.example.com", api_key_file: path }
+        ).call
+      end
+
+      assert_equal Sure::Errors::ExitCodes::USAGE, error.exit_code
+      assert_includes error.message, "at least 4 bytes"
+      refute_includes error.message, "zq7"
+      refute File.exist?(File.join(xdg, "sure", "config.yml"))
+      refute File.exist?(File.join(xdg, "sure", "credentials.json"))
+    end
+  end
+
+  def test_a_real_terminal_does_not_echo_the_typed_key
+    skip "PTY is unavailable on this platform" unless defined?(PTY)
+
+    with_temp_config_home do |env, _home, _xdg|
+      server = LocalHttpServer.new(responses: [ response(usage_body) ])
+      cli_dir = File.expand_path("../../..", __dir__)
+      output = String.new
+
+      PTY.spawn(
+        env,
+        "ruby", "-I", File.join(cli_dir, "lib"), File.join(cli_dir, "exe", "sure"),
+        "auth", "login", "--server", server.url
+      ) do |reader, writer, pid|
+        begin
+          output << read_until(reader, "API key: ")
+          writer.write("#{SECRET}\n")
+          writer.flush
+          output << read_until_eof(reader)
+        ensure
+          begin
+            Process.wait(pid)
+          rescue Errno::ECHILD
+            nil
+          end
+        end
+      end
+
+      refute_includes output, SECRET
+      assert_equal 1, server.received.length
+    ensure
+      server&.stop
+    end
+  end
+
   def test_a_group_readable_key_file_warns_but_is_read
     with_temp_config_home do |env, home, _xdg|
       path = File.join(home, "key.txt")
@@ -231,6 +330,71 @@ class LoginTest < Minitest::Test
   end
 
   private
+
+  # A terminal that reports itself as a TTY but offers no hidden-input API.
+  # `gets` is instrumented so a regression that falls back to an echoed read
+  # fails loudly instead of leaking the key into the test transcript.
+  class OpaqueTTY
+    attr_reader :gets_calls
+
+    def initialize
+      @gets_calls = 0
+    end
+
+    def tty?
+      true
+    end
+    alias_method :isatty, :tty?
+
+    def gets(*_args)
+      @gets_calls += 1
+      raise "gets must never be used to read a secret"
+    end
+  end
+
+  PTY_READ_TIMEOUT = 10
+
+  def read_until(io, marker)
+    buffer = +""
+    deadline = monotonic + PTY_READ_TIMEOUT
+
+    until buffer.include?(marker)
+      remaining = deadline - monotonic
+      break if remaining <= 0
+      break unless IO.select([ io ], nil, nil, remaining)
+
+      begin
+        buffer << io.readpartial(4096)
+      rescue EOFError
+        break
+      end
+    end
+
+    buffer
+  end
+
+  def read_until_eof(io)
+    buffer = +""
+    deadline = monotonic + PTY_READ_TIMEOUT
+
+    loop do
+      remaining = deadline - monotonic
+      break if remaining <= 0
+      break unless IO.select([ io ], nil, nil, remaining)
+
+      begin
+        buffer << io.readpartial(4096)
+      rescue EOFError, Errno::EIO
+        break
+      end
+    end
+
+    buffer
+  end
+
+  def monotonic
+    Process.clock_gettime(Process::CLOCK_MONOTONIC)
+  end
 
   class FailingLoader
     def initialize

@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 
+begin
+  # Supplies IO#getpass and IO#noecho. Guarded because platforms without a
+  # console extension must still load: prompt_secret refuses to read rather
+  # than falling back to an echoed read.
+  require "io/console"
+rescue LoadError
+  nil
+end
+
 require_relative "../config"
 require_relative "../errors"
 require_relative "../http/client"
@@ -16,12 +25,16 @@ module Sure
     # /api/v1/usage, and only then persists it. The key never appears in argv,
     # in a child environment, or in rendered output.
     class Login
+      MIN_BYTES = 4
       MAX_BYTES = 4096
       PROMPT = "API key: "
       ENV_KEY = "SURE_API_KEY"
       FLAG_GUIDANCE =
         "no API key was provided; use --api-key-file, --api-key-stdin, " \
         "or set #{ENV_KEY}"
+      HIDDEN_INPUT_GUIDANCE =
+        "cannot read a hidden API key on this terminal; use --api-key-file, " \
+        "--api-key-stdin, or SURE_API_KEY"
 
       # Minimal provider for the validation request: the candidate key is
       # already in memory and must not be re-read from the store or env.
@@ -192,7 +205,8 @@ module Sure
         elsif runtime.stdin.respond_to?(:noecho)
           runtime.stdin.noecho { runtime.stdin.gets }
         else
-          runtime.stdin.gets
+          # Never fall back to an echoed read for a secret.
+          raise Errors::UsageError, HIDDEN_INPUT_GUIDANCE
         end
 
         normalize_secret(raw)
@@ -228,6 +242,10 @@ module Sure
         end
         if value.match?(/[\r\n\0]/)
           raise Errors::UsageError, "API key must not contain CR, LF, or NUL characters"
+        end
+        if value.bytesize < MIN_BYTES
+          raise Errors::UsageError,
+                "API key must be at least #{MIN_BYTES} bytes"
         end
 
         value

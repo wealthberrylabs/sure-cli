@@ -82,6 +82,40 @@ class ApiKeyProviderTest < Minitest::Test
     end
   end
 
+  def test_rejects_a_three_byte_environment_key_without_echoing_it
+    provider = Sure::Auth::ApiKeyProvider.new(
+      env: { "SURE_API_KEY" => "zq7" }, store: FakeStore.new
+    )
+
+    error = assert_raises(Sure::Errors::UsageError) { provider.fetch(profile) }
+
+    assert_equal Sure::Errors::ExitCodes::USAGE, error.exit_code
+    assert_includes error.message, "at least 4 bytes"
+    refute_includes error.message, "zq7"
+  end
+
+  def test_rejects_a_three_byte_stored_credential_and_says_to_log_in_again
+    store = FakeStore.new(credential: credential(secret: "zq7"))
+    provider = Sure::Auth::ApiKeyProvider.new(env: {}, store: store)
+
+    error = assert_raises(Sure::Errors::UsageError) { provider.fetch(profile) }
+
+    assert_equal Sure::Errors::ExitCodes::USAGE, error.exit_code
+    assert_includes error.message, "sure auth login"
+    refute_includes error.message, "zq7"
+  end
+
+  def test_a_four_byte_key_is_accepted_and_maskable
+    provider = Sure::Auth::ApiKeyProvider.new(
+      env: { "SURE_API_KEY" => "zq7x" }, store: FakeStore.new
+    )
+
+    secret, source = provider.fetch(profile)
+
+    assert_equal [ "zq7x", :environment ], [ secret, source ]
+    refute_includes Sure::Redactor.new(active_secret: secret).redact_value("server said #{secret}"), secret
+  end
+
   def test_credential_inspect_and_to_s_redact_the_secret
     rendered = credential.inspect
 

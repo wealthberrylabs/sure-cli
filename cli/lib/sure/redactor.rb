@@ -11,7 +11,9 @@ module Sure
     SENSITIVE_HEADERS = %w[authorization x-api-key proxy-authorization].freeze
 
     # Shorter values are too likely to appear coincidentally in ordinary text;
-    # real keys are 64 hex characters and are caught by HEX_KEY.
+    # real keys are 64 hex characters and are caught by HEX_KEY. Every input
+    # boundary (env, file, stdin, prompt, store) rejects secrets below this
+    # length, so an accepted credential is always maskable.
     MIN_ACTIVE_SECRET_LENGTH = 4
 
     SENSITIVE_HEADER_PATTERN =
