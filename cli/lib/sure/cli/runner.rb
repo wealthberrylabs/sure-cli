@@ -92,6 +92,8 @@ module Sure
       end
 
       def render_error(error)
+        return if error.respond_to?(:silent?) && error.silent?
+
         message = redactor.redact_value(error.message.to_s)
 
         if @machine_output

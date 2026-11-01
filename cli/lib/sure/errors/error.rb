@@ -78,5 +78,23 @@ module Sure
         ExitCodes::TIMEOUT
       end
     end
+
+    # Carries an exit code that a command already rendered output for (for
+    # example `sure doctor`). The process boundary must not add another error
+    # line after the command's own report.
+    class ExitStatusError < Error
+      def initialize(exit_code, message = "command failed")
+        @exit_code = exit_code
+        super(message)
+      end
+
+      def exit_code
+        @exit_code
+      end
+
+      def silent?
+        true
+      end
+    end
   end
 end

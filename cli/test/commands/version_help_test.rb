@@ -52,8 +52,9 @@ class VersionHelpTest < Minitest::Test
   def test_doctor_reaches_its_command_class
     result = run_cli("doctor")
 
-    assert_equal 2, result.status
-    assert_includes result.stderr, "not implemented until its plan lands"
+    assert_equal 1, result.status
+    payload = JSON.parse(result.stdout)
+    assert_equal "FAIL", payload.dig("data", "checks", 0, "status")
   end
 
   def test_completion_reaches_its_command_class

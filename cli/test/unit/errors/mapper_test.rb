@@ -127,7 +127,7 @@ class MapperTest < Minitest::Test
   end
 
   def test_runner_writes_structured_json_errors_in_machine_mode
-    result = run_cli("doctor")
+    result = run_cli("api", "TRACE", "/api/v1/accounts")
 
     payload = JSON.parse(result.stderr)
 
@@ -140,7 +140,7 @@ class MapperTest < Minitest::Test
   end
 
   def test_runner_writes_one_human_line_on_a_tty
-    result = run_cli("doctor", stdout: FakeTTY.new)
+    result = run_cli("api", "TRACE", "/api/v1/accounts", stdout: FakeTTY.new)
 
     assert_equal 2, result.status
     assert_match(/\Aerror: /, result.stderr)
@@ -148,7 +148,7 @@ class MapperTest < Minitest::Test
   end
 
   def test_runner_redacts_the_environment_key_from_errors
-    result = run_cli("doctor", env: { "SURE_API_KEY" => "tok_live_abc123" })
+    result = run_cli("api", "TRACE", "/api/v1/accounts", env: { "SURE_API_KEY" => "tok_live_abc123" })
 
     refute_includes result.stderr, "tok_live_abc123"
   end

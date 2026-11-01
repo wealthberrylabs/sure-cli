@@ -27,6 +27,9 @@ require_relative "sure/auth/scope_preflight"
 require_relative "sure/auth/login"
 require_relative "sure/auth/logout"
 require_relative "sure/auth/status"
+require_relative "sure/doctor/check"
+require_relative "sure/doctor/result"
+require_relative "sure/doctor/runner"
 require_relative "sure/cli"
 
 # Public namespace for the Sure command-line client.
