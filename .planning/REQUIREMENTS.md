@@ -23,7 +23,7 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 ### Authentication
 
 - [x] **AUTH-01**: User can log in with an API key via hidden prompt, `--api-key-file`, or stdin, without editing files.
-- [ ] **AUTH-02**: User credentials are stored in the OS keychain when available, with a `0600` atomic file fallback and a one-time warning.
+- [x] **AUTH-02**: User credentials are stored in the OS keychain when available, with a `0600` atomic file fallback and a one-time warning.
 - [x] **AUTH-03**: User can inspect `sure auth status` to see server, profile, user, key name, scopes, and rate-limit tier.
 - [ ] **AUTH-04**: User can log in through a browser using OAuth authorization code + PKCE with a loopback callback.
 - [ ] **AUTH-05**: The CLI registers itself through dynamic client registration using an allowed, non-reserved client name.
