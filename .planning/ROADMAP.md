@@ -44,7 +44,7 @@ behalf of the web platform.
   4. `sure doctor` diagnoses a bad URL, key, or TLS setting and exits nonzero with an actionable message.
   5. `sure api GET /api/v1/accounts` works, and secrets never appear in output, logs, or debug traces.
 
-**Plans:** 5/5 plans complete
+**Plans:** 5/9 plans complete — 4 gap-closure plans ready
 
 Plans:
 **Wave 1**
@@ -66,6 +66,13 @@ Plans:
 **Wave 5** *(blocked on Wave 4 completion)*
 
 - [x] 01-05: `sure doctor`, shell completion, output hardening (CSV/NDJSON/fields, non-TTY safety)
+
+**Gap Closure** *(from 01-VERIFICATION.md, 2026-11-01; all four plans are independent and run in parallel)*
+
+- [ ] 01-06: Normalize leading global options before Thor dispatch (gap 2 / CR-02)
+- [ ] 01-07: Hidden-prompt login, TLS settings, secret-length enforcement, strict `/usage` validation (gaps 1 & 3 / CR-01, CR-03, WR-02, WR-03, WR-04, WR-06)
+- [ ] 01-08: Path-scoped credential identity and keychain-miss fallback (gap 4 / CR-04, WR-01)
+- [ ] 01-09: Guarded zsh completion script (gap 5 / CR-05)
 
 ### Phase 2: Read & Report
 
