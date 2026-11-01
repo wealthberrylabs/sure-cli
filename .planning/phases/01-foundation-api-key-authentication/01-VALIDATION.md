@@ -49,7 +49,7 @@ devcontainer or a local Ruby 3.4.9) before running tests.
 | 01-02-T1 | 02 | 2 | FOUND-03 | T-02-01 | Config `0600`, dir `0700`, no symlinks | unit | `cd cli && bundle exec ruby -Itest test/unit/config/atomic_file_test.rb` | ❌ W0 | ⬜ pending |
 | 01-02-T2 | 02 | 2 | FOUND-04 | T-02-02 | TLS verified by default; no userinfo/query in base URL | unit | `cd cli && bundle exec ruby -Itest test/unit/config/resolver_test.rb` | ❌ W0 | ⬜ pending |
 | 01-02-T3 | 02 | 2 | AUTH-08 | T-02-03 | Env key never written to disk or argv | unit | `cd cli && bundle exec ruby -Itest test/unit/auth/api_key_provider_test.rb` | ❌ W0 | ⬜ pending |
-| 01-03-T1 | 03 | 3 | FOUND-07 | T-03-01, T-03-02 | No key in exceptions/logs; GET/HEAD retries only | unit | `cd cli && bundle exec ruby -Itest test/unit/http/client_test.rb` | ❌ W0 | ⬜ pending |
+| 01-03-T1 | 03 | 3 | FOUND-07, AUTH-09 | T-03-01, T-03-02 | Active key redacted by value; errors preserve status/headers; GET/HEAD retries only | unit | `cd cli && bundle exec ruby -Itest test/unit/http/client_test.rb` | ❌ W0 | ⬜ pending |
 | 01-03-T2 | 03 | 3 | FOUND-07 | T-03-03 | Stable envelope; no raw payload default | unit | `cd cli && bundle exec ruby -Itest test/unit/output/json_test.rb` | ❌ W0 | ⬜ pending |
 | 01-03-T3 | 03 | 3 | FOUND-09, AUTH-09 | T-03-04 | `/api/v1`-only paths; redacted dry-run | command/integration | `cd cli && bundle exec ruby -Itest test/commands/api_test.rb` | ❌ W0 | ⬜ pending |
 | 01-04-T1 | 04 | 4 | AUTH-02 | T-04-01, T-04-02 | Secret via stdin only; atomic `0600` fallback | unit | `cd cli && bundle exec ruby -Itest test/unit/auth/file_store_test.rb` | ❌ W0 | ⬜ pending |
@@ -70,7 +70,8 @@ devcontainer or a local Ruby 3.4.9) before running tests.
 - [ ] `cli/test/test_helper.rb` — Minitest, WebMock enable/reset, `capture_io`, injected runtime, temporary `HOME`/`XDG_CONFIG_HOME` (01-01 Task 1)
 - [ ] `cli/test/support/temp_config.rb` — isolated config directory (01-02 Task 1)
 - [ ] `cli/test/support/local_http_server.rb` — stdlib TCPServer for the end-to-end API smoke test (01-03 Task 1)
-- [ ] `cli/test/support/fake_tty.rb` — stdin/stdout TTY stubs for the hidden-prompt login test (01-04 Task 2)
+- [ ] `cli/test/support/fake_tty.rb` — stdin/stdout TTY stubs for `sure api` confirmation (01-03 Task 3) and the hidden-prompt login test (01-04 Task 2)
+- [ ] Devcontainer `db`/`redis` services + reachable test database for the additive `/usage` controller test and rswag regeneration (01-04 Task 3)
 - [ ] `cli/test/support/fake_store.rb` — in-memory credential store (01-04 Task 1)
 - [ ] `cli/test/support/fake_command_runner.rb` — keychain helper stub (01-04 Task 1)
 - [ ] `cli/test/support/fake_keychain.rb` — keychain availability/failure stub (01-04 Task 1)
