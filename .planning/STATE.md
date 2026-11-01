@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-02-PLAN.md (config and API-key provider)
-last_updated: "2026-11-01T01:19:19.688Z"
+stopped_at: Completed 01-03-PLAN.md (HTTP pipeline, output contract, sure api)
+last_updated: "2026-11-01T01:29:49.797Z"
 last_activity: 2026-11-01
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 5
-  completed_plans: 2
-  percent: 40
+  completed_plans: 3
+  percent: 60
 ---
 
 # Project State
@@ -26,29 +26,29 @@ See: .planning/PROJECT.md (updated 2026-10-31)
 ## Current Position
 
 Phase: 01 (Foundation & API-Key Authentication) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-11-01
 
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 2
+- Total plans completed: 3
 - Average duration: 7 min
-- Total execution time: 0 hours 13 min
+- Total execution time: 0 hours 20 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 2 of 5 | 13 min | 7 min |
+| 01 | 3 of 5 | 20 min | 7 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (9 min), 01-02 (4 min)
+- Last 5 plans: 01-01 (9 min), 01-02 (4 min), 01-03 (7 min)
 - Trend: stabilizing around 5-10 min per plan
 
 *Updated after each plan completion*
@@ -57,6 +57,7 @@ Progress: [████░░░░░░] 40%
 |------|----------|-------|-------|
 | 01-01 | 9 min | 4 | 36 |
 | 01-02 | 4 min | 3 | 24 |
+| 01-03 | 7 min | 3 | 39 |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - [Phase 01]: Separate config.lock from credentials.lock so config read-modify-write and credential writes never share a lock — Prevents unrelated write paths from serializing against each other while keeping each lock private
 - [Phase 01]: Resolve profile, server, CA bundle, TLS, and output into one immutable Config::Profile with a sources map; commands never inspect argv or ENV — One precedence implementation prevents per-command drift and keeps diagnostics consistent
 - [Phase 01]: SURE_API_KEY is environment-only and marks cached profile scopes untrusted; NullStore remains the safe storage placeholder until Plan 01-04 — Automation keys must never be persisted, and wave-3 clients need a usable store interface before real backends land
+- [Phase 01]: RaiseError is declared before Retry in the Faraday stack so retry_statuses sees 429/5xx — The research snippet order raised on the first 503, so GET retries never fired
+- [Phase 01]: sure api validates the method and URI-decoded /api/v1 path and confirms writes before any request — Absolute hosts, encoded traversal, and unconfirmed writes must exit 2 without moving the key
+- [Phase 01]: One Redactor per command is shared by Client, AuthMiddleware, and --raw with the key registered lazily — Dry-run must not read the credential, and raw output must still be redacted
 
 ### Pending Todos
 
@@ -104,8 +108,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-01T01:19:19.649Z
-Stopped at: Completed 01-02-PLAN.md (config and API-key provider)
+Last session: 2026-11-01T01:29:49.775Z
+Stopped at: Completed 01-03-PLAN.md (HTTP pipeline, output contract, sure api)
 Resume file: None
 
-**Next step:** Execute `01-03-PLAN.md` (`/gsd-execute-phase 1`) to add the HTTP pipeline, errors, redaction, and pagination base.
+**Next step:** Execute `01-04-PLAN.md` (`/gsd-execute-phase 1`) to add credential storage (keychain + file fallback) and the auth commands.

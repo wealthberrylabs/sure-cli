@@ -15,9 +15,9 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 - [x] **FOUND-04**: User can target a server URL with a path prefix, custom CA bundle, or explicit insecure opt-in.
 - [ ] **FOUND-05**: User sees readable tables on a TTY and stable JSON when stdout is piped.
 - [ ] **FOUND-06**: User can force `--json`, `--csv`, `--ndjson`, and `--fields` output for scripting.
-- [ ] **FOUND-07**: User gets deterministic exit codes, errors on stderr, and no Ruby backtraces for expected failures.
+- [x] **FOUND-07**: User gets deterministic exit codes, errors on stderr, and no Ruby backtraces for expected failures.
 - [ ] **FOUND-08**: User can run `sure doctor` to check connectivity, auth, scope, TLS, clock skew, config permissions, and server compatibility.
-- [ ] **FOUND-09**: User can call any endpoint through `sure api METHOD PATH` with normal auth, tenancy, and redaction.
+- [x] **FOUND-09**: User can call any endpoint through `sure api METHOD PATH` with normal auth, tenancy, and redaction.
 - [ ] **FOUND-10**: User can install bash, zsh, and fish completion generated from the command catalog.
 
 ### Authentication
@@ -30,7 +30,7 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 - [ ] **AUTH-06**: OAuth access tokens refresh automatically before expiry, and failures produce a clear re-login instruction.
 - [ ] **AUTH-07**: User can log out locally and, when supported, revoke the token or API key.
 - [x] **AUTH-08**: CI and automation can supply a key through `SURE_API_KEY` without persisting it.
-- [ ] **AUTH-09**: The CLI never prints, logs, or includes API keys, bearer tokens, or refresh tokens in errors, debug output, or copyable commands.
+- [x] **AUTH-09**: The CLI never prints, logs, or includes API keys, bearer tokens, or refresh tokens in errors, debug output, or copyable commands.
 
 ### Read & Report
 
