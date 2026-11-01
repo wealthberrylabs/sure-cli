@@ -11,10 +11,10 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 
 - [x] **FOUND-01**: User can install the CLI as a Ruby gem and run `sure` from any shell.
 - [x] **FOUND-02**: User can run `sure --version`, `sure help`, and per-command help with examples.
-- [ ] **FOUND-03**: User can define named server profiles and switch with `--profile`, `SURE_PROFILE`, or a default.
+- [x] **FOUND-03**: User can define named server profiles and switch with `--profile`, `SURE_PROFILE`, or a default.
 - [ ] **FOUND-04**: User can target a server URL with a path prefix, custom CA bundle, or explicit insecure opt-in.
 - [x] **FOUND-05**: User sees readable tables on a TTY and stable JSON when stdout is piped.
-- [ ] **FOUND-06**: User can force `--json`, `--csv`, `--ndjson`, and `--fields` output for scripting.
+- [x] **FOUND-06**: User can force `--json`, `--csv`, `--ndjson`, and `--fields` output for scripting.
 - [x] **FOUND-07**: User gets deterministic exit codes, errors on stderr, and no Ruby backtraces for expected failures.
 - [x] **FOUND-08**: User can run `sure doctor` to check connectivity, auth, scope, TLS, clock skew, config permissions, and server compatibility.
 - [x] **FOUND-09**: User can call any endpoint through `sure api METHOD PATH` with normal auth, tenancy, and redaction.

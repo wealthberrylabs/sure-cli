@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 gap-closure plans ready (01-06..01-09)
-last_updated: "2026-11-01T14:29:41.876Z"
-last_activity: 2026-11-01 -- Phase 01 planning complete
+stopped_at: Completed 01-06-PLAN.md
+last_updated: "2026-11-01T17:22:18.841Z"
+last_activity: 2026-11-01 -- Completed 01-06 gap-closure plan
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 9
-  completed_plans: 5
-  percent: 0
+  completed_plans: 6
+  percent: 67
 ---
 
 # Project State
@@ -26,29 +26,29 @@ See: .planning/PROJECT.md (updated 2026-10-31)
 ## Current Position
 
 Phase: 01 (Foundation & API-Key Authentication) — GAP CLOSURE PLANNED
-Plan: 5 of 9 executed; 01-06..01-09 await execution
-Status: Ready to execute
-Last activity: 2026-11-01 -- Phase 01 gap-closure plans created
+Plan: 6 of 9 executed; 01-07..01-09 await execution
+Status: Executing Phase 01
+Last activity: 2026-11-01
 
-Progress: [░░░░░░░░░░] 0% (5/9 plans executed, gap closure planned)
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 9 min
-- Total execution time: 0 hours 44 min
+- Total execution time: 0 hours 47 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 5 of 5 | 44 min | 9 min |
+| 01 | 6 of 9 | 47 min | 8 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (9 min), 01-02 (4 min), 01-03 (7 min), 01-04 (15 min), 01-05 (9 min)
+- Last 5 plans: 01-02 (4 min), 01-03 (7 min), 01-04 (15 min), 01-05 (9 min), 01-06 (3 min)
 - Trend: the output/doctor/completion slice stayed near the phase average; credential work was the outlier
 
 *Updated after each plan completion*
@@ -60,6 +60,7 @@ Progress: [░░░░░░░░░░] 0% (5/9 plans executed, gap closure p
 | 01-03 | 7 min | 3 | 39 |
 | 01-04 | 15 min | 3 | 33 |
 | 01-05 | 9 min | 3 | 35 |
+| 01-06 | 3 min | 2 | 4 |
 
 ## Accumulated Context
 
@@ -91,6 +92,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Doctor owns its prerequisites through explicit success flags and reports SKIP instead of secondary failures — A fresh install must produce one Check 1 FAIL, not a cascading credential error
 - [Phase 01]: Doctor returns its first failed check code through a silent ExitStatusError — The rendered checklist is the complete output; the process boundary must not append a second error
 - [Phase 01]: Completion emits only validated catalog tokens and fixed flags, never catalog descriptions in shell command positions — Catalog text must not become shell code
+- [Phase 1]: Global option placement is normalized once in Runner: allowlisted leading options are hoisted behind the command, and unknown or value-less leading options exit 2
 
 ### Pending Todos
 
@@ -119,8 +121,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-01T02:14:04Z
-Stopped at: Phase 1 verification found 5 blocking gaps
-Resume file: .planning/phases/01-foundation-api-key-authentication/01-VERIFICATION.md
+Last session: 2026-11-01T17:22:18.819Z
+Stopped at: Completed 01-06-PLAN.md
+Resume file: None
 
 **Next step:** Run `/gsd-plan-phase 1 --gaps` to create gap-closure plans from 01-VERIFICATION.md, then `/gsd-execute-phase 1 --gaps-only`.
