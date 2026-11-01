@@ -44,7 +44,7 @@ behalf of the web platform.
   4. `sure doctor` diagnoses a bad URL, key, or TLS setting and exits nonzero with an actionable message.
   5. `sure api GET /api/v1/accounts` works, and secrets never appear in output, logs, or debug traces.
 
-**Plans:** 3/5 plans executed
+**Plans:** 4/5 plans executed
 
 Plans:
 **Wave 1**
@@ -61,7 +61,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 01-04: API-key credential store (keychain + file fallback) and auth commands
+- [x] 01-04: API-key credential store (keychain + file fallback) and auth commands
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
@@ -239,7 +239,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & API-Key Authentication | 3/5 | In Progress|  |
+| 1. Foundation & API-Key Authentication | 4/5 | In Progress|  |
 | 2. Read & Report | 0/5 | Not started | - |
 | 3. Safe Writes | 0/5 | Not started | - |
 | 4. Imports, Sync & Exports | 0/5 | Not started | - |

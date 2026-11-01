@@ -22,9 +22,9 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can log in with an API key via hidden prompt, `--api-key-file`, or stdin, without editing files.
-- [ ] **AUTH-02**: User credentials are stored in the OS keychain when available, with a `0600` atomic file fallback and a one-time warning.
-- [ ] **AUTH-03**: User can inspect `sure auth status` to see server, profile, user, key name, scopes, and rate-limit tier.
+- [x] **AUTH-01**: User can log in with an API key via hidden prompt, `--api-key-file`, or stdin, without editing files.
+- [x] **AUTH-02**: User credentials are stored in the OS keychain when available, with a `0600` atomic file fallback and a one-time warning.
+- [x] **AUTH-03**: User can inspect `sure auth status` to see server, profile, user, key name, scopes, and rate-limit tier.
 - [ ] **AUTH-04**: User can log in through a browser using OAuth authorization code + PKCE with a loopback callback.
 - [ ] **AUTH-05**: The CLI registers itself through dynamic client registration using an allowed, non-reserved client name.
 - [ ] **AUTH-06**: OAuth access tokens refresh automatically before expiry, and failures produce a clear re-login instruction.
@@ -63,7 +63,7 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 - [ ] **SAFE-03**: Transaction creates use `source` + `external_id` for idempotency, and unknown write outcomes are reported as unknown with an inspection command.
 - [ ] **SAFE-04**: Batch writes show per-item results, stop on destructive failures, summarize counts, and exit nonzero if any item failed.
 - [ ] **SAFE-05**: The CLI never prompts when stdin is not a TTY; it fails with an actionable message instead.
-- [ ] **SAFE-06**: Write commands preflight the credential scope and refuse `read`-only keys before starting.
+- [x] **SAFE-06**: Write commands preflight the credential scope and refuse `read`-only keys before starting.
 
 ### Imports, Sync & Exports
 

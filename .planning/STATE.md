@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md (HTTP pipeline, output contract, sure api)
-last_updated: "2026-11-01T01:29:49.797Z"
+stopped_at: Completed 01-04-PLAN.md (credential store, auth commands, usage user)
+last_updated: "2026-11-01T01:50:48.049Z"
 last_activity: 2026-11-01
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
-  percent: 60
+  completed_plans: 4
+  percent: 80
 ---
 
 # Project State
@@ -26,30 +26,30 @@ See: .planning/PROJECT.md (updated 2026-10-31)
 ## Current Position
 
 Phase: 01 (Foundation & API-Key Authentication) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-11-01
 
-Progress: [██████░░░░] 60%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 3
-- Average duration: 7 min
-- Total execution time: 0 hours 20 min
+- Total plans completed: 4
+- Average duration: 9 min
+- Total execution time: 0 hours 35 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 3 of 5 | 20 min | 7 min |
+| 01 | 4 of 5 | 35 min | 9 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (9 min), 01-02 (4 min), 01-03 (7 min)
-- Trend: stabilizing around 5-10 min per plan
+- Last 5 plans: 01-01 (9 min), 01-02 (4 min), 01-03 (7 min), 01-04 (15 min)
+- Trend: the credential/auth slice was larger; read commands should return to a shorter cycle
 
 *Updated after each plan completion*
 
@@ -58,6 +58,7 @@ Progress: [██████░░░░] 60%
 | 01-01 | 9 min | 4 | 36 |
 | 01-02 | 4 min | 3 | 24 |
 | 01-03 | 7 min | 3 | 39 |
+| 01-04 | 15 min | 3 | 33 |
 
 ## Accumulated Context
 
@@ -80,6 +81,11 @@ Recent decisions affecting current work:
 - [Phase 01]: RaiseError is declared before Retry in the Faraday stack so retry_statuses sees 429/5xx — The research snippet order raised on the first 503, so GET retries never fired
 - [Phase 01]: sure api validates the method and URI-decoded /api/v1 path and confirms writes before any request — Absolute hosts, encoded traversal, and unconfirmed writes must exit 2 without moving the key
 - [Phase 01]: One Redactor per command is shared by Client, AuthMiddleware, and --raw with the key registered lazily — Dry-run must not read the credential, and raw output must still be redacted
+- [Phase 01]: StoreFactory is itself an Auth::Store and owns selection plus fallback transitions — Keeps Context and the API-key provider unaware of keychain versus file
+- [Phase 01]: Login persists read_only derived from validated scopes — Read-only keys fail preflight with zero network requests while matching the server scope model
+- [Phase 01]: Write preflight runs after confirmation but before the write request — Preserves non-TTY and abort behavior while blocking read-only keys before any write leaves the process
+- [Phase 01]: The additive /usage user object is identity-only (email, first_name, last_name) — auth status needs identity, and omitting id/family fields minimizes personal-data exposure
+- [Phase 01]: First login sets default_profile when the config has none — Makes the newly created profile immediately usable by later commands
 
 ### Pending Todos
 
@@ -108,8 +114,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-01T01:29:49.775Z
-Stopped at: Completed 01-03-PLAN.md (HTTP pipeline, output contract, sure api)
+Last session: 2026-11-01T01:50:48.025Z
+Stopped at: Completed 01-04-PLAN.md (credential store, auth commands, usage user)
 Resume file: None
 
 **Next step:** Execute `01-04-PLAN.md` (`/gsd-execute-phase 1`) to add credential storage (keychain + file fallback) and the auth commands.
