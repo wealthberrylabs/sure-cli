@@ -13,12 +13,12 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 - [x] **FOUND-02**: User can run `sure --version`, `sure help`, and per-command help with examples.
 - [x] **FOUND-03**: User can define named server profiles and switch with `--profile`, `SURE_PROFILE`, or a default.
 - [x] **FOUND-04**: User can target a server URL with a path prefix, custom CA bundle, or explicit insecure opt-in.
-- [ ] **FOUND-05**: User sees readable tables on a TTY and stable JSON when stdout is piped.
-- [ ] **FOUND-06**: User can force `--json`, `--csv`, `--ndjson`, and `--fields` output for scripting.
+- [x] **FOUND-05**: User sees readable tables on a TTY and stable JSON when stdout is piped.
+- [x] **FOUND-06**: User can force `--json`, `--csv`, `--ndjson`, and `--fields` output for scripting.
 - [x] **FOUND-07**: User gets deterministic exit codes, errors on stderr, and no Ruby backtraces for expected failures.
-- [ ] **FOUND-08**: User can run `sure doctor` to check connectivity, auth, scope, TLS, clock skew, config permissions, and server compatibility.
+- [x] **FOUND-08**: User can run `sure doctor` to check connectivity, auth, scope, TLS, clock skew, config permissions, and server compatibility.
 - [x] **FOUND-09**: User can call any endpoint through `sure api METHOD PATH` with normal auth, tenancy, and redaction.
-- [ ] **FOUND-10**: User can install bash, zsh, and fish completion generated from the command catalog.
+- [x] **FOUND-10**: User can install bash, zsh, and fish completion generated from the command catalog.
 
 ### Authentication
 
@@ -62,7 +62,7 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 - [ ] **SAFE-02**: Destructive commands require `--yes`; severe operations (family reset, user delete) require a typed confirmation phrase.
 - [ ] **SAFE-03**: Transaction creates use `source` + `external_id` for idempotency, and unknown write outcomes are reported as unknown with an inspection command.
 - [ ] **SAFE-04**: Batch writes show per-item results, stop on destructive failures, summarize counts, and exit nonzero if any item failed.
-- [ ] **SAFE-05**: The CLI never prompts when stdin is not a TTY; it fails with an actionable message instead.
+- [x] **SAFE-05**: The CLI never prompts when stdin is not a TTY; it fails with an actionable message instead.
 - [x] **SAFE-06**: Write commands preflight the credential scope and refuse `read`-only keys before starting.
 
 ### Imports, Sync & Exports

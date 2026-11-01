@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 01-04-PLAN.md (credential store, auth commands, usage user)
-last_updated: "2026-11-01T01:50:48.049Z"
+status: verifying
+stopped_at: Completed 01-05-PLAN.md (output formats, doctor, completion)
+last_updated: "2026-11-01T02:03:10.773Z"
 last_activity: 2026-11-01
 progress:
   total_phases: 8
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 80
+  completed_plans: 5
+  percent: 13
 ---
 
 # Project State
@@ -27,29 +27,29 @@ See: .planning/PROJECT.md (updated 2026-10-31)
 
 Phase: 01 (Foundation & API-Key Authentication) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-11-01
 
-Progress: [████████░░] 80%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 9 min
-- Total execution time: 0 hours 35 min
+- Total execution time: 0 hours 44 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 4 of 5 | 35 min | 9 min |
+| 01 | 5 of 5 | 44 min | 9 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (9 min), 01-02 (4 min), 01-03 (7 min), 01-04 (15 min)
-- Trend: the credential/auth slice was larger; read commands should return to a shorter cycle
+- Last 5 plans: 01-01 (9 min), 01-02 (4 min), 01-03 (7 min), 01-04 (15 min), 01-05 (9 min)
+- Trend: the output/doctor/completion slice stayed near the phase average; credential work was the outlier
 
 *Updated after each plan completion*
 
@@ -59,6 +59,7 @@ Progress: [████████░░] 80%
 | 01-02 | 4 min | 3 | 24 |
 | 01-03 | 7 min | 3 | 39 |
 | 01-04 | 15 min | 3 | 33 |
+| 01-05 | 9 min | 3 | 35 |
 
 ## Accumulated Context
 
@@ -86,6 +87,10 @@ Recent decisions affecting current work:
 - [Phase 01]: Write preflight runs after confirmation but before the write request — Preserves non-TTY and abort behavior while blocking read-only keys before any write leaves the process
 - [Phase 01]: The additive /usage user object is identity-only (email, first_name, last_name) — auth status needs identity, and omitting id/family fields minimizes personal-data exposure
 - [Phase 01]: First login sets default_profile when the config has none — Makes the newly created profile immediately usable by later commands
+- [Phase 01]: Field selection validates collection item keys inside envelopes so --fields works identically on sure api and explicit-column commands — Envelope keys are not user data; projecting them broke the cross-format contract
+- [Phase 01]: Doctor owns its prerequisites through explicit success flags and reports SKIP instead of secondary failures — A fresh install must produce one Check 1 FAIL, not a cascading credential error
+- [Phase 01]: Doctor returns its first failed check code through a silent ExitStatusError — The rendered checklist is the complete output; the process boundary must not append a second error
+- [Phase 01]: Completion emits only validated catalog tokens and fixed flags, never catalog descriptions in shell command positions — Catalog text must not become shell code
 
 ### Pending Todos
 
@@ -114,8 +119,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-01T01:50:48.025Z
-Stopped at: Completed 01-04-PLAN.md (credential store, auth commands, usage user)
+Last session: 2026-11-01T02:03:00.000Z
+Stopped at: Completed 01-05-PLAN.md (output formats, doctor, completion)
 Resume file: None
 
-**Next step:** Execute `01-04-PLAN.md` (`/gsd-execute-phase 1`) to add credential storage (keychain + file fallback) and the auth commands.
+**Next step:** Phase 01 is complete. Run `/gsd-verify-work 1`, then plan Phase 2 (read commands).

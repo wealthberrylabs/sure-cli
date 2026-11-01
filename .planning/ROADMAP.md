@@ -19,7 +19,7 @@ behalf of the web platform.
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation & API-Key Authentication** - Installable gem, profiles, HTTP pipeline, credential store, doctor
+- [x] **Phase 1: Foundation & API-Key Authentication** - Installable gem, profiles, HTTP pipeline, credential store, doctor (completed 2026-11-01)
 - [ ] **Phase 2: Read & Report** - Accounts, transactions, cash flow, balance sheet, budgets, holdings
 - [ ] **Phase 3: Safe Writes** - Guarded transaction mutations, splits, tags, recurring, valuations, trades
 - [ ] **Phase 4: Imports, Sync & Exports** - Preflight, CSV import, chunked sessions, sync, async exports
@@ -44,7 +44,7 @@ behalf of the web platform.
   4. `sure doctor` diagnoses a bad URL, key, or TLS setting and exits nonzero with an actionable message.
   5. `sure api GET /api/v1/accounts` works, and secrets never appear in output, logs, or debug traces.
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 **Wave 1**
@@ -65,7 +65,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 01-05: `sure doctor`, shell completion, output hardening (CSV/NDJSON/fields, non-TTY safety)
+- [x] 01-05: `sure doctor`, shell completion, output hardening (CSV/NDJSON/fields, non-TTY safety)
 
 ### Phase 2: Read & Report
 
@@ -239,7 +239,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & API-Key Authentication | 4/5 | In Progress|  |
+| 1. Foundation & API-Key Authentication | 5/5 | Complete   | 2026-11-01 |
 | 2. Read & Report | 0/5 | Not started | - |
 | 3. Safe Writes | 0/5 | Not started | - |
 | 4. Imports, Sync & Exports | 0/5 | Not started | - |
