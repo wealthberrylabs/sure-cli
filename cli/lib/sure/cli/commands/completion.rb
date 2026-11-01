@@ -2,15 +2,17 @@
 
 require_relative "../base"
 require_relative "../runtime"
+require_relative "../../completion/generator"
 
 module Sure
   module CLI
     module Commands
-      # Shell completion generation. Scripts land with the completion plan.
+      # Writes one catalog-derived completion script to stdout. It makes no
+      # network calls and never resolves config or credentials.
       class Completion < Sure::CLI::Base
         no_commands do
           def call(shell)
-            raise Sure::Errors::UsageError, NOT_IMPLEMENTED
+            runtime.stdout.write(Sure::Completion::Generator.new.render(shell))
           end
         end
       end

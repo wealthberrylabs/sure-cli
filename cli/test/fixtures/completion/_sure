@@ -1,0 +1,22 @@
+#compdef sure
+
+_sure() {
+  local -a commands
+
+  if (( CURRENT == 2 )); then
+    commands=(version help auth api doctor completion)
+    compadd -- $commands
+    return
+  fi
+
+  case $words[2] in
+    auth)
+      if (( CURRENT == 3 )); then
+        commands=(login logout status)
+        compadd -- $commands
+      fi
+      ;;
+  esac
+}
+
+_sure "$@"

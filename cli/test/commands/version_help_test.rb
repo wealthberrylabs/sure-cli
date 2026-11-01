@@ -60,8 +60,9 @@ class VersionHelpTest < Minitest::Test
   def test_completion_reaches_its_command_class
     result = run_cli("completion", "bash")
 
-    assert_equal 2, result.status
-    assert_includes result.stderr, "not implemented until its plan lands"
+    assert_equal 0, result.status
+    assert_includes result.stdout, "complete -F _sure_completion sure"
+    assert_empty result.stderr
   end
 
   def test_forbidden_api_key_flag_is_rejected_without_echoing_the_secret
