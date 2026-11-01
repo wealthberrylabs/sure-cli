@@ -53,6 +53,24 @@ class StoreFactoryTest < Minitest::Test
     assert_equal 1, file.writes.length
   end
 
+  def test_keychain_miss_falls_back_to_an_existing_file_copy
+    keychain = FakeKeychain.new(available: true)
+    file = FakeStore.new
+    file.write(key, credential)
+    factory = build_factory(keychain: keychain, file: file)
+
+    assert_equal :keychain, factory.mode
+    assert_equal credential.secret, factory.read(key).secret
+  end
+
+  def test_keychain_miss_without_a_file_copy_is_nil
+    keychain = FakeKeychain.new(available: true)
+    factory = build_factory(keychain: keychain, file: FakeStore.new)
+
+    assert_equal :keychain, factory.mode
+    assert_nil factory.read(key)
+  end
+
   def test_keychain_read_failure_uses_an_existing_file_copy
     keychain = FakeKeychain.new(available: true, fail_read: "keychain locked")
     file = FakeStore.new

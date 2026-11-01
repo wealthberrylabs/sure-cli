@@ -32,12 +32,17 @@ module Sure
 
       attr_reader :profile, :env, :runner, :platform, :file_store, :keychain_store, :warning
 
-      # Keychain read failure falls back to an existing file copy only.
+      # A nil keychain result is a miss, not a verdict: the credential may live in
+      # the 0600 file after an earlier fallback write. Keychain read failures
+      # fall back to an existing file copy too.
       def read(key)
         return file_store.read(key) if mode == :file
 
         begin
-          keychain_store.read(key)
+          stored = keychain_store.read(key)
+          return stored if stored
+
+          file_store.read(key)
         rescue StoreError => e
           copy = file_store.read(key)
           return copy if copy
