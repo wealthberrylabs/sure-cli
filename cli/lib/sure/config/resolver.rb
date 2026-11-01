@@ -125,21 +125,29 @@ module Sure
         env_insecure = env["SURE_INSECURE"]
         unless env_insecure.nil?
           insecure = parse_boolean(env_insecure, "SURE_INSECURE")
-          warn_insecure if insecure
+          if insecure
+            reject_insecure_with_ca!(ca_bundle)
+            warn_insecure
+          end
           return [ !insecure, :environment ]
         end
 
         profile_verify = attributes["tls_verify"]
         unless profile_verify.nil?
-          warn_insecure unless profile_verify
+          unless profile_verify
+            reject_insecure_with_ca!(ca_bundle)
+            warn_insecure
+          end
           return [ profile_verify, :profile ]
         end
 
         [ true, :default ]
       end
 
+      # Any disabled-verification path must reject a CA bundle from any source:
+      # silently discarding the CA is the misconfiguration this guard prevents.
       def reject_insecure_with_ca!(ca_bundle)
-        return unless ca_bundle && present?(options[:ca_bundle])
+        return if ca_bundle.nil?
 
         raise Errors::UsageError, "--ca-bundle and --insecure cannot be used together"
       end

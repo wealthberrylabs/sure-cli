@@ -22,13 +22,19 @@ module Sure
 
         class_option :profile, type: :string, desc: "Profile name"
         class_option :server, type: :string, desc: "Sure server URL (base URL, not /api/v1)"
+        class_option :ca_bundle, type: :string, desc: "PEM CA bundle"
+        class_option :insecure, type: :boolean, desc: "Disable TLS verification (dangerous)"
         class_option :json, type: :boolean, desc: "Emit a stable JSON envelope"
         class_option :table, type: :boolean, desc: "Emit a human-readable table"
         class_option :csv, type: :boolean, desc: "Emit CSV"
         class_option :ndjson, type: :boolean, desc: "Emit one JSON object per line"
         class_option :fields, type: :string, desc: "Comma-separated fields to include"
+        class_option :color, type: :boolean, desc: "Color output (--no-color disables)"
+        class_option :quiet, type: :boolean, desc: "Suppress non-error output"
+        class_option :verbose, type: :boolean, desc: "Add request IDs and timings"
 
         class_exclusive :json, :table, :csv, :ndjson
+        class_exclusive :quiet, :verbose
 
         desc "login", Sure::Catalog.fetch("auth.login").summary
         long_desc catalog_long_desc("auth.login")

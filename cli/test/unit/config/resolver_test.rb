@@ -199,6 +199,52 @@ class ResolverTest < Minitest::Test
     end
   end
 
+  def test_environment_ca_bundle_and_insecure_flag_together_are_a_usage_error
+    with_temp_config_home do |env, home|
+      paths = paths_for(env)
+      write_config(paths, config_for("default"))
+      ca = File.join(home, "ca.pem")
+      File.write(ca, "PEM")
+
+      error = assert_raises(Sure::Errors::UsageError) do
+        build_resolver(paths, env.merge("SURE_CA_BUNDLE" => ca), { insecure: true }).resolve
+      end
+
+      assert_includes error.message, "--ca-bundle"
+      assert_includes error.message, "--insecure"
+    end
+  end
+
+  def test_profile_ca_bundle_and_sure_insecure_together_are_a_usage_error
+    with_temp_config_home do |env|
+      paths = paths_for(env)
+      write_config(paths, config_with_ca_bundle("default"))
+      File.write(File.join(paths.directory, "ca.pem"), "PEM")
+
+      error = assert_raises(Sure::Errors::UsageError) do
+        build_resolver(paths, env.merge("SURE_INSECURE" => "true"), {}).resolve
+      end
+
+      assert_includes error.message, "--ca-bundle"
+      assert_includes error.message, "--insecure"
+    end
+  end
+
+  def test_profile_ca_bundle_and_profile_tls_verify_false_together_are_a_usage_error
+    with_temp_config_home do |env|
+      paths = paths_for(env)
+      write_config(paths, config_with_ca_bundle("default", tls_verify: false))
+      File.write(File.join(paths.directory, "ca.pem"), "PEM")
+
+      error = assert_raises(Sure::Errors::UsageError) do
+        build_resolver(paths, env, {}).resolve
+      end
+
+      assert_includes error.message, "--ca-bundle"
+      assert_includes error.message, "--insecure"
+    end
+  end
+
   def test_rejects_an_invalid_sure_insecure_value
     with_temp_config_home do |env|
       paths = paths_for(env)
@@ -325,6 +371,16 @@ class ResolverTest < Minitest::Test
     }
     data["default_profile"] = default_profile if default_profile
     data
+  end
+
+  def config_with_ca_bundle(default_profile, tls_verify: nil)
+    profile = { "server_url" => "https://default.example", "ca_bundle" => "ca.pem" }
+    profile["tls_verify"] = tls_verify unless tls_verify.nil?
+    {
+      "schema_version" => 1,
+      "default_profile" => default_profile,
+      "profiles" => { "default" => profile }
+    }
   end
 
   def build_resolver(paths, env, options, cwd: Dir.pwd, stderr: nil)

@@ -207,7 +207,177 @@ class AuthCommandTest < Minitest::Test
     end
   end
 
+  def test_an_unreadable_ca_bundle_exits_two_before_any_request
+    with_temp_config_home do |env, home, _xdg|
+      server = LocalHttpServer.new(responses: [ response(usage_body) ])
+
+      result = run_cli(
+        "auth", "login", "--api-key-stdin", "--server", server.url,
+        "--ca-bundle", File.join(home, "missing-ca.pem"),
+        stdin: SECRET, env: env
+      )
+
+      assert_equal 2, result.status
+      assert_includes result.stderr, "not readable"
+      assert_empty server.received
+    ensure
+      server&.stop
+    end
+  end
+
+  def test_a_readable_ca_bundle_reaches_the_login_probe_profile
+    with_temp_config_home do |env, home, _xdg|
+      server = LocalHttpServer.new(responses: [ response(usage_body) ])
+      ca = File.join(home, "ca.pem")
+      File.write(ca, "PEM")
+
+      result = nil
+      profiles = with_captured_probe_profiles do
+        result = run_cli(
+          "auth", "login", "--api-key-stdin", "--server", server.url,
+          "--ca-bundle", ca, stdin: SECRET, env: env
+        )
+      end
+
+      assert_equal 0, result.status
+      assert_equal [ ca ], profiles.map(&:ca_bundle)
+      assert_equal :flag, profiles.first.sources[:ca_bundle]
+      assert profiles.first.tls_verify
+    ensure
+      server&.stop
+    end
+  end
+
+  def test_insecure_reaches_the_login_probe_profile_and_warns
+    with_temp_config_home do |env, _home, _xdg|
+      server = LocalHttpServer.new(responses: [ response(usage_body) ])
+
+      result = nil
+      profiles = with_captured_probe_profiles do
+        result = run_cli(
+          "auth", "login", "--api-key-stdin", "--server", server.url,
+          "--insecure", stdin: SECRET, env: env
+        )
+      end
+
+      assert_equal 0, result.status
+      refute profiles.first.tls_verify
+      assert_includes result.stderr, "TLS verification is disabled"
+    ensure
+      server&.stop
+    end
+  end
+
+  def test_a_profile_tls_verify_false_is_honored_by_login_without_a_flag
+    with_temp_config_home do |env, _home, _xdg|
+      paths = paths_for(env)
+      write_config(paths, {
+        "schema_version" => 1,
+        "default_profile" => "default",
+        "profiles" => { "default" => {
+          "server_url" => "https://profile.example.com", "tls_verify" => false
+        } }
+      })
+      server = LocalHttpServer.new(responses: [ response(usage_body) ])
+
+      result = nil
+      profiles = with_captured_probe_profiles do
+        result = run_cli(
+          "auth", "login", "--api-key-stdin", "--server", server.url,
+          stdin: SECRET, env: env
+        )
+      end
+
+      assert_equal 0, result.status
+      refute profiles.first.tls_verify
+      assert_equal :profile, profiles.first.sources[:tls_verify]
+    ensure
+      server&.stop
+    end
+  end
+
+  def test_environment_ca_bundle_with_insecure_flag_exits_two
+    with_temp_config_home do |env, home, _xdg|
+      server = LocalHttpServer.new(responses: [ response(usage_body) ])
+      ca = File.join(home, "ca.pem")
+      File.write(ca, "PEM")
+
+      result = run_cli(
+        "auth", "login", "--api-key-stdin", "--server", server.url, "--insecure",
+        stdin: SECRET, env: env.merge("SURE_CA_BUNDLE" => ca)
+      )
+
+      assert_equal 2, result.status
+      assert_includes result.stderr, "--ca-bundle"
+      assert_includes result.stderr, "--insecure"
+      assert_empty server.received
+    ensure
+      server&.stop
+    end
+  end
+
+  def test_quiet_stores_the_key_without_the_plaintext_warning
+    with_temp_config_home do |env, _home, xdg|
+      server = LocalHttpServer.new(responses: [ response(usage_body) ])
+
+      result = run_cli(
+        "auth", "login", "--api-key-stdin", "--server", server.url, "--quiet",
+        stdin: SECRET, env: env
+      )
+
+      assert_equal 0, result.status
+      refute_includes result.stderr, "warning:"
+      config = YAML.safe_load_file(File.join(xdg, "sure", "config.yml"))
+      assert_equal "file", config.dig("profiles", "default", "credential_store")
+      assert File.exist?(File.join(xdg, "sure", "credentials.json"))
+    ensure
+      server&.stop
+    end
+  end
+
+  def test_auth_accepts_verbose_and_no_color_and_rejects_quiet_with_verbose
+    with_temp_config_home do |env, _home, _xdg|
+      server = LocalHttpServer.new(responses: [ response(usage_body), response(usage_body) ])
+      auth_env = env.merge("SURE_API_KEY" => SECRET)
+
+      verbose = run_cli(
+        "auth", "status", "--server", server.url, "--verbose", "--json", env: auth_env
+      )
+      assert_equal 0, verbose.status
+
+      no_color = run_cli(
+        "auth", "status", "--server", server.url, "--no-color", "--json", env: auth_env
+      )
+      assert_equal 0, no_color.status
+
+      conflict = run_cli(
+        "auth", "status", "--server", server.url, "--quiet", "--verbose", "--json", env: auth_env
+      )
+      assert_equal 2, conflict.status
+      assert_includes conflict.stderr, "quiet"
+      assert_includes conflict.stderr, "verbose"
+    ensure
+      server&.stop
+    end
+  end
+
   private
+
+  # Records the profile each HTTP::Client is built with, then builds the real
+  # client. Proves what the login probe actually received without a mock server
+  # that hides TLS settings.
+  def with_captured_probe_profiles
+    profiles = []
+    original = Sure::HTTP::Client.method(:new)
+    replacement = lambda do |**kwargs|
+      profiles << kwargs[:profile]
+      original.call(**kwargs)
+    end
+
+    Sure::HTTP::Client.stub(:new, replacement) { yield }
+
+    profiles
+  end
 
   def response(body, status: 200)
     { status: status, headers: { "Content-Type" => "application/json" }, body: body }

@@ -139,14 +139,17 @@ module Sure
               "no server URL for the selected profile; pass --server or set SURE_SERVER"
       end
 
-      def build_profile(name, server_url, attributes)
-        Config::Profile.new(
-          name: name,
-          server_url: server_url,
-          credential_store: attributes["credential_store"],
-          scopes: attributes.fetch("scopes", []),
-          plaintext_warning_shown: attributes.fetch("plaintext_warning_shown", false)
-        )
+      def build_profile(name, server_url, _attributes)
+        # One precedence implementation for server, CA bundle, TLS, timeouts,
+        # scopes, credential store, and warning flags. Login must reach the same
+        # private-CA server every other command can reach.
+        Config::Resolver.new(
+          env: runtime.env,
+          options: options.merge(server: server_url),
+          loader: loader,
+          cwd: runtime.cwd,
+          stderr: runtime.stderr
+        ).resolve(profile_name: name)
       end
 
       def validate!(profile, secret)
