@@ -1,0 +1,22 @@
+schema_version: 1
+default_profile: default
+profiles:
+  default:
+    server_url: https://sure.example.com/sure
+    ca_bundle:
+    tls_verify: true
+    open_timeout: 5
+    read_timeout: 30
+    output:
+    read_only: false
+    credential_store: keychain
+    scopes:
+      - read
+    plaintext_warning_shown: false
+  work:
+    server_url: https://work.example.com
+    tls_verify: false
+    credential_store: file
+    scopes:
+      - read
+      - read_write

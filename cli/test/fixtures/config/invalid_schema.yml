@@ -1,0 +1,6 @@
+schema_version: 1
+default_profile: default
+unexpected_key: true
+profiles:
+  default:
+    server_url: https://sure.example.com

@@ -3,6 +3,7 @@
 require_relative "sure/version"
 require_relative "sure/errors"
 require_relative "sure/catalog"
+require_relative "sure/config"
 require_relative "sure/cli"
 
 # Public namespace for the Sure command-line client.
