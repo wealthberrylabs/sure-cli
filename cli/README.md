@@ -46,6 +46,48 @@ API keys are supplied through a hidden prompt, `--api-key-file`,
 `--api-key-stdin`, or `SURE_API_KEY`. The CLI never accepts a key as a plain
 `--api-key` argument, so keys do not leak into process lists or shell history.
 
+## Safety properties
+
+The CLI is designed to be safe to drive from scripts and agents, where stdout is
+a pipe rather than a terminal.
+
+- **Redaction covers every output format.** The active credential is masked in
+  `--json`, `--table`, `--csv`, and `--ndjson` as well as `--raw` and error text.
+  This matters because a non-TTY caller defaults to `--json`, and a server is
+  free to echo a credential in any field. `sure api GET /api/v1/whatever --json`
+  will print `[REDACTED]`, not your key.
+- **Secrets never travel in argv.** Login reads the key from a hidden prompt,
+  `--api-key-file`, `--api-key-stdin`, or `SURE_API_KEY`. There is no
+  `--api-key` flag.
+- **Credentials are private by default.** The OS keychain is preferred; the file
+  fallback is written `0600` and warns once per profile.
+- **Reads and writes are distinguished.** `sure api` refuses
+  `POST`/`PUT`/`PATCH`/`DELETE` without `--yes` when stdin is not a TTY, and a
+  key without `read_write` scope fails the scope preflight before any write
+  request leaves the process.
+- **Paths stay inside the API.** `sure api` accepts only paths under `/api/v1`
+  and rejects absolute URLs, fragments, traversal, and percent-encoded
+  separators after two rounds of decoding.
+
+## Exit codes
+
+Exit codes are semantic and stable, so a script can branch without parsing
+output.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | General error / a failed `doctor` check |
+| 2 | Usage error (bad flag, rejected path, missing input) |
+| 3 | Authentication or insufficient scope |
+| 4 | Not found |
+| 5 | Validation error |
+| 6 | Rate limited |
+| 7 | Partial failure |
+| 8 | Network or server error |
+| 9 | Timeout |
+| 130 | Interrupted |
+
 ## Development
 
 ```bash

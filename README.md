@@ -49,6 +49,49 @@ Sure is a fully working personal finance app that can be [self hosted with Docke
 Sure can be accessed from a browser, the macOS desktop app, the mobile app, API
 clients, and LLM agents. See [Sure Clients](docs/clients.md) for an overview.
 
+## Sure CLI (added in this fork)
+
+This fork ships a first-party command-line client, `sure`, in [`cli/`](cli/README.md).
+It is a client of the same `/api/v1` HTTP API the web, desktop, and mobile apps
+use: it does not connect to Postgres and does not load Rails, ActiveSupport, or
+ActiveRecord, so authentication, family tenancy, authorization, and financial
+semantics stay on the server.
+
+Phase 1 (`0.1.0`) covers the auth lifecycle plus a raw API escape hatch:
+
+| Command | Purpose |
+| --- | --- |
+| `sure auth login` | Validate an API key against `GET /api/v1/usage`, then store it |
+| `sure auth status` | Show the active profile and API key metadata |
+| `sure auth logout` | Delete the local credential |
+| `sure api METHOD PATH` | Call any `/api/v1` endpoint |
+| `sure doctor` | Diagnose config, credentials, connectivity, TLS, clock skew, and key scope |
+| `sure completion SHELL` | Generate bash, zsh, or fish completion |
+
+Install and run it from source:
+
+```bash
+cd cli
+bundle install
+gem build sure.gemspec
+gem_home=$(mktemp -d)
+GEM_HOME="$gem_home" gem install --local sure-0.1.0.gem --no-document
+"$gem_home/bin/sure" --version
+```
+
+Design constraints worth knowing before you script against it:
+
+- **The key never enters argv.** `auth login` reads the API key from a hidden prompt, `--api-key-file`, `--api-key-stdin`, or `SURE_API_KEY`. There is no plain `--api-key` flag, so a key cannot leak into process lists or shell history.
+- **Credentials are private by default.** The OS keychain is preferred, with a `0600` file fallback that warns once.
+- **Output is redacted in every format.** The active credential is masked in `--json`, `--table`, `--csv`, and `--ndjson` as well as `--raw` and error text, because non-TTY callers default to JSON.
+- **Writes are explicit.** `sure api` refuses `POST`/`PUT`/`PATCH`/`DELETE` without `--yes` on a non-TTY, and a key without `read_write` scope fails before any write request leaves the process.
+- **Exit codes are stable and semantic.** `0` success, `2` usage error, `3` authentication or scope failure, `8` network or server error, and so on; the full ladder is in [cli/README.md](cli/README.md#exit-codes).
+
+The CLI is **not** part of upstream `we-promise/sure`; it is maintained here.
+See [cli/README.md](cli/README.md) for the full command surface and development
+workflow, and [Sure Clients](docs/clients.md) for how it fits alongside the
+other clients.
+
 ## Forking and Attribution
 
 This repo is a community fork of the archived Maybe Finance repo.

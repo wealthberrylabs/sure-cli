@@ -17,6 +17,7 @@ integration.
 | Mobile app | Basic mobile access on iOS and Android, currently focused on login and account balances. | Flutter companion app | See [Sure Mobile](../mobile/README.md). |
 | LLM agents and assistants | Claude Desktop, GPT agents, local agents, or custom tools that need structured access to Sure data. | MCP endpoint for external AI clients | See [MCP Server for External AI Assistants](hosting/mcp.md). |
 | Custom API clients | Scripts, services, importer experiments, dashboards, or other integrations. | HTTP API | See the OpenAPI spec at [docs/api/openapi.yaml](api/openapi.yaml) and endpoint guides such as [docs/api/transactions.md](api/transactions.md). |
+| Command-line client (`sure`) | Terminals, CI jobs, and agents that want a scriptable Sure client without writing HTTP plumbing. **Added in this fork; not in upstream `we-promise/sure`.** | Ruby gem, Phase 1 | See [cli/README.md](../cli/README.md). |
 
 ## Web app
 
@@ -94,6 +95,41 @@ app clients.
 
 Start with the OpenAPI spec at [docs/api/openapi.yaml](api/openapi.yaml) and
 endpoint guides such as [docs/api/transactions.md](api/transactions.md).
+
+## Command-line client (`sure`)
+
+> Added in this fork. The CLI is not part of upstream `we-promise/sure`.
+
+The `sure` CLI in [`cli/`](../cli/README.md) is a Ruby gem that talks to the same
+`/api/v1` HTTP API as every other client. It does not connect to Postgres and
+does not load Rails, so it stays a thin client: tenancy, authorization, and
+server-calculated financial semantics all remain the server's responsibility.
+
+Phase 1 covers the credential lifecycle, a raw API escape hatch, diagnostics,
+and shell completion:
+
+```bash
+sure auth login      # validate a key against GET /api/v1/usage, then store it
+sure auth status     # active profile and key metadata
+sure auth logout     # delete the local credential
+sure api GET /api/v1/accounts --table
+sure doctor          # config, credential, TLS, clock, scope, and connectivity checks
+sure completion bash
+```
+
+Use it when the work is scripted: cron jobs, CI steps, shell pipelines, or an
+agent that would otherwise hand-roll HTTP calls. Prefer the MCP endpoint when an
+assistant should discover operations dynamically, and the web app for day-to-day
+use.
+
+Two properties matter if you build on it. The API key is never accepted as an
+argv flag — it comes from a hidden prompt, `--api-key-file`, `--api-key-stdin`,
+or `SURE_API_KEY` — so it cannot leak into process lists or shell history. And
+every output format is redacted, including `--json`, which is what non-TTY
+callers get by default.
+
+See [cli/README.md](../cli/README.md) for installation and the full command
+surface.
 
 ## Choosing a client
 
