@@ -1,0 +1,16 @@
+{
+  "api_key": {
+    "name": "CLI smoke key",
+    "scopes": ["read"],
+    "last_used_at": "2026-10-31T12:00:00Z",
+    "created_at": "2026-10-30T09:00:00Z"
+  },
+  "rate_limit": {
+    "tier": "standard",
+    "limit": 100,
+    "current_count": 4,
+    "remaining": 96,
+    "reset_in_seconds": 2314,
+    "reset_at": "2026-10-31T13:00:00Z"
+  }
+}

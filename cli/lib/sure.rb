@@ -2,10 +2,15 @@
 
 require_relative "sure/version"
 require_relative "sure/errors"
+require_relative "sure/errors/mapper"
+require_relative "sure/redactor"
 require_relative "sure/catalog"
 require_relative "sure/config"
 require_relative "sure/config/resolver"
 require_relative "sure/http/url_builder"
+require_relative "sure/http/rate_limit"
+require_relative "sure/http/response"
+require_relative "sure/http/client"
 require_relative "sure/auth/api_key_provider"
 require_relative "sure/cli"
 

@@ -1,0 +1,9 @@
+{
+  "error": "rate_limit_exceeded",
+  "message": "Rate limit exceeded. Try again in 2314 seconds.",
+  "details": {
+    "limit": 100,
+    "current": 100,
+    "reset_in_seconds": 2314
+  }
+}
