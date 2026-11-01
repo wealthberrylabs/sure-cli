@@ -11,26 +11,26 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 
 - [x] **FOUND-01**: User can install the CLI as a Ruby gem and run `sure` from any shell.
 - [x] **FOUND-02**: User can run `sure --version`, `sure help`, and per-command help with examples.
-- [x] **FOUND-03**: User can define named server profiles and switch with `--profile`, `SURE_PROFILE`, or a default.
-- [x] **FOUND-04**: User can target a server URL with a path prefix, custom CA bundle, or explicit insecure opt-in.
+- [ ] **FOUND-03**: User can define named server profiles and switch with `--profile`, `SURE_PROFILE`, or a default.
+- [ ] **FOUND-04**: User can target a server URL with a path prefix, custom CA bundle, or explicit insecure opt-in.
 - [x] **FOUND-05**: User sees readable tables on a TTY and stable JSON when stdout is piped.
-- [x] **FOUND-06**: User can force `--json`, `--csv`, `--ndjson`, and `--fields` output for scripting.
+- [ ] **FOUND-06**: User can force `--json`, `--csv`, `--ndjson`, and `--fields` output for scripting.
 - [x] **FOUND-07**: User gets deterministic exit codes, errors on stderr, and no Ruby backtraces for expected failures.
 - [x] **FOUND-08**: User can run `sure doctor` to check connectivity, auth, scope, TLS, clock skew, config permissions, and server compatibility.
 - [x] **FOUND-09**: User can call any endpoint through `sure api METHOD PATH` with normal auth, tenancy, and redaction.
-- [x] **FOUND-10**: User can install bash, zsh, and fish completion generated from the command catalog.
+- [ ] **FOUND-10**: User can install bash, zsh, and fish completion generated from the command catalog.
 
 ### Authentication
 
-- [x] **AUTH-01**: User can log in with an API key via hidden prompt, `--api-key-file`, or stdin, without editing files.
-- [x] **AUTH-02**: User credentials are stored in the OS keychain when available, with a `0600` atomic file fallback and a one-time warning.
+- [ ] **AUTH-01**: User can log in with an API key via hidden prompt, `--api-key-file`, or stdin, without editing files.
+- [ ] **AUTH-02**: User credentials are stored in the OS keychain when available, with a `0600` atomic file fallback and a one-time warning.
 - [x] **AUTH-03**: User can inspect `sure auth status` to see server, profile, user, key name, scopes, and rate-limit tier.
 - [ ] **AUTH-04**: User can log in through a browser using OAuth authorization code + PKCE with a loopback callback.
 - [ ] **AUTH-05**: The CLI registers itself through dynamic client registration using an allowed, non-reserved client name.
 - [ ] **AUTH-06**: OAuth access tokens refresh automatically before expiry, and failures produce a clear re-login instruction.
 - [ ] **AUTH-07**: User can log out locally and, when supported, revoke the token or API key.
 - [x] **AUTH-08**: CI and automation can supply a key through `SURE_API_KEY` without persisting it.
-- [x] **AUTH-09**: The CLI never prints, logs, or includes API keys, bearer tokens, or refresh tokens in errors, debug output, or copyable commands.
+- [ ] **AUTH-09**: The CLI never prints, logs, or includes API keys, bearer tokens, or refresh tokens in errors, debug output, or copyable commands.
 
 ### Read & Report
 

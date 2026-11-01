@@ -19,7 +19,7 @@ behalf of the web platform.
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [x] **Phase 1: Foundation & API-Key Authentication** - Installable gem, profiles, HTTP pipeline, credential store, doctor (completed 2026-11-01)
+- [ ] **Phase 1: Foundation & API-Key Authentication** - Installable gem, profiles, HTTP pipeline, credential store, doctor (verification gaps found 2026-11-01)
 - [ ] **Phase 2: Read & Report** - Accounts, transactions, cash flow, balance sheet, budgets, holdings
 - [ ] **Phase 3: Safe Writes** - Guarded transaction mutations, splits, tags, recurring, valuations, trades
 - [ ] **Phase 4: Imports, Sync & Exports** - Preflight, CSV import, chunked sessions, sync, async exports
@@ -239,7 +239,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & API-Key Authentication | 5/5 | Complete   | 2026-11-01 |
+| 1. Foundation & API-Key Authentication | 5/5 | Gaps found | - |
 | 2. Read & Report | 0/5 | Not started | - |
 | 3. Safe Writes | 0/5 | Not started | - |
 | 4. Imports, Sync & Exports | 0/5 | Not started | - |
