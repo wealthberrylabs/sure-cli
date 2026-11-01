@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-11-01T00:57:09.919Z"
-last_activity: 2026-11-01 -- Phase 1 planning complete
+stopped_at: Completed 01-01-PLAN.md (walking skeleton)
+last_updated: "2026-11-01T01:12:50.289Z"
+last_activity: 2026-11-01
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 5
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -21,37 +21,41 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-31)
 
 **Core value:** Any Sure operation a user can perform in the platform can be performed from a terminal with the same permissions and accounting semantics — and any platform action can be reproduced as a copyable CLI command.
-**Current focus:** Phase 1 — Foundation & API-Key Authentication
+**Current focus:** Phase 01 — Foundation & API-Key Authentication
 
 ## Current Position
 
-Phase: 1 of 8 (Foundation & API-Key Authentication)
-Plan: 0 of 5 in current phase
+Phase: 01 (Foundation & API-Key Authentication) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-11-01 -- Phase 1 planning complete
+Last activity: 2026-11-01
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: 0 min
+- Total plans completed: 1
+- Average duration: 9 min
 - Total execution time: 0 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01 | 1 of 5 | 9 min | 9 min |
 
 **Recent Trend:**
 
-- Last 5 plans: —
-- Trend: —
+- Last 5 plans: 01-01 (9 min)
+- Trend: first data point
 
 *Updated after each plan completion*
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| 01-01 | 9 min | 4 | 36 |
 
 ## Accumulated Context
 
@@ -66,6 +70,8 @@ Recent decisions affecting current work:
 - **Full parity in eight phases** — the user asked for a CLI version of the platform, not a read-only viewer.
 - **Platform handoff is copy/deep-link only** — the web app must never execute a command on the server.
 - **Standard granularity, parallel plans, docs committed** — GSD config at `.planning/config.json`.
+- [Phase 01]: Catalog is the single source for help, examples, and command validation; planned entries stay invisible until implemented — Prevents help/completion drift and encodes D-01..D-04 before domain commands exist
+- [Phase 01]: Hide Thor's injected tree command so the product surface matches the catalog — Thor adds tree to every subclass; it is an implementation aid, not a CLI feature
 
 ### Pending Todos
 
@@ -94,8 +100,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-10-31T21:33:09.021Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-foundation-api-key-authentication/01-CONTEXT.md
+Last session: 2026-11-01T01:12:08.786Z
+Stopped at: Completed 01-01-PLAN.md (walking skeleton)
+Resume file: None
 
-**Next step:** Run `/gsd-discuss-phase 1` or `/gsd-plan-phase 1` to plan the foundation phase.
+**Next step:** Execute `01-02-PLAN.md` (`/gsd-execute-phase 1`) to add config, profiles, and server URL resolution.

@@ -9,8 +9,8 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 
 ### Foundation
 
-- [ ] **FOUND-01**: User can install the CLI as a Ruby gem and run `sure` from any shell.
-- [ ] **FOUND-02**: User can run `sure --version`, `sure help`, and per-command help with examples.
+- [x] **FOUND-01**: User can install the CLI as a Ruby gem and run `sure` from any shell.
+- [x] **FOUND-02**: User can run `sure --version`, `sure help`, and per-command help with examples.
 - [ ] **FOUND-03**: User can define named server profiles and switch with `--profile`, `SURE_PROFILE`, or a default.
 - [ ] **FOUND-04**: User can target a server URL with a path prefix, custom CA bundle, or explicit insecure opt-in.
 - [ ] **FOUND-05**: User sees readable tables on a TTY and stable JSON when stdout is piped.
