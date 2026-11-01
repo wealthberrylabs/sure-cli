@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "support/local_http_server"
 
 class ApiCommandTest < Minitest::Test
   SERVER = "https://sure.example.com"
@@ -219,6 +220,54 @@ class ApiCommandTest < Minitest::Test
     2.times { client.get("/api/v1/accounts") }
 
     assert_equal 1, calls
+  end
+
+  def test_leading_profile_option_still_reaches_the_api_command
+    WebMock.allow_net_connect!
+    server = LocalHttpServer.new(
+      responses: [ { status: 200, headers: json_headers, body: api_fixture("accounts") } ]
+    )
+
+    result = run_cli(
+      "--profile", "staging", "api", "GET", "/api/v1/accounts", "--json",
+      env: ENV_KEY.merge("SURE_SERVER" => server.url)
+    )
+
+    assert_equal 0, result.status, result.stderr
+    payload = JSON.parse(result.stdout)
+    assert_equal 2, payload.dig("data", "accounts").length
+    requests = server.received
+    assert_equal 1, requests.length
+    assert_equal "GET", requests.first.method
+    assert_equal "/api/v1/accounts", requests.first.path
+  ensure
+    server&.stop
+    WebMock.disable_net_connect!
+  end
+
+  def test_a_leading_server_option_requests_the_same_path_as_the_trailing_form
+    WebMock.allow_net_connect!
+    leading_server = LocalHttpServer.new(
+      responses: [ { status: 200, headers: json_headers, body: api_fixture("accounts") } ]
+    )
+    trailing_server = LocalHttpServer.new(
+      responses: [ { status: 200, headers: json_headers, body: api_fixture("accounts") } ]
+    )
+
+    leading = run_cli("--server", leading_server.url, "api", "GET", "/api/v1/accounts", "--json",
+                      env: ENV_KEY)
+    trailing = run_cli("api", "GET", "/api/v1/accounts", "--server", trailing_server.url, "--json",
+                       env: ENV_KEY)
+
+    assert_equal 0, leading.status, leading.stderr
+    assert_equal 0, trailing.status, trailing.stderr
+    assert_equal [ "/api/v1/accounts" ], leading_server.received.map(&:path)
+    assert_equal [ "/api/v1/accounts" ], trailing_server.received.map(&:path)
+    assert_equal JSON.parse(trailing.stdout)["data"], JSON.parse(leading.stdout)["data"]
+  ensure
+    leading_server&.stop
+    trailing_server&.stop
+    WebMock.disable_net_connect!
   end
 
   private

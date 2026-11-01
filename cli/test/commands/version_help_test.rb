@@ -57,6 +57,33 @@ class VersionHelpTest < Minitest::Test
     assert_equal "FAIL", payload.dig("data", "checks", 0, "status")
   end
 
+  def test_leading_json_reaches_doctor_and_propagates_its_exit_code
+    result = run_cli("--json", "doctor")
+
+    assert_equal 1, result.status
+    checks = JSON.parse(result.stdout).dig("data", "checks")
+    assert_kind_of Array, checks
+    refute_empty checks
+    refute_includes result.stdout, "Usage:"
+  end
+
+  def test_leading_json_still_reaches_the_version_alias
+    result = run_cli("--json", "--version")
+
+    assert_equal 0, result.status
+    assert_equal "sure 0.1.0\n", result.stdout
+    assert_empty result.stderr
+  end
+
+  def test_a_mistyped_leading_option_fails_loudly_instead_of_printing_help
+    result = run_cli("--jsn", "doctor")
+
+    assert_equal 2, result.status
+    assert_empty result.stdout
+    assert_includes result.stderr, "--jsn"
+    refute_includes result.stderr, "Usage:"
+  end
+
   def test_completion_reaches_its_command_class
     result = run_cli("completion", "bash")
 
