@@ -1,0 +1,5 @@
+source "https://rubygems.org"
+
+gemspec
+
+ruby file: File.expand_path("../.ruby-version", __dir__)
