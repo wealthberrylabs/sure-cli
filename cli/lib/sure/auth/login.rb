@@ -68,7 +68,7 @@ module Sure
         server_url = resolve_server(attributes)
         secret = read_secret
 
-        profile = build_profile(name, server_url, attributes)
+        profile = build_profile(name, server_url)
         usage = validate!(profile, secret)
 
         scopes = Array(usage.dig("api_key", "scopes")).map(&:to_s)
@@ -83,7 +83,7 @@ module Sure
 
         mode = store.write(key, credential)
         warning = fallback_warning(store, attributes)
-        persist!(name, server_url, scopes, mode, warning.nil?)
+        persist!(name, server_url, scopes, mode, !warning.nil?)
 
         result(name, server_url, scopes, mode, warning)
       rescue StandardError
@@ -139,7 +139,7 @@ module Sure
               "no server URL for the selected profile; pass --server or set SURE_SERVER"
       end
 
-      def build_profile(name, server_url, _attributes)
+      def build_profile(name, server_url)
         # One precedence implementation for server, CA bundle, TLS, timeouts,
         # scopes, credential store, and warning flags. Login must reach the same
         # private-CA server every other command can reach.
@@ -164,6 +164,11 @@ module Sure
         body = client.get("/api/v1/usage").body
         unless body.is_a?(Hash)
           raise Errors::GeneralError, "GET /api/v1/usage returned an unexpected response"
+        end
+        unless body["api_key"].is_a?(Hash) && body.dig("api_key", "scopes").is_a?(Array)
+          raise Errors::GeneralError,
+                "GET /api/v1/usage did not return api_key.scopes; " \
+                "check that --server points at a Sure instance"
         end
 
         body
@@ -270,7 +275,7 @@ module Sure
           "install a keychain helper or set credential_store: keychain to avoid this warning"
       end
 
-      def persist!(name, server_url, scopes, mode, warning_shown)
+      def persist!(name, server_url, scopes, mode, warning_emitted)
         changes = {
           "profiles" => {
             name => {
@@ -278,7 +283,7 @@ module Sure
               "scopes" => scopes,
               "read_only" => !scopes.include?("read_write"),
               "credential_store" => mode.to_s,
-              "plaintext_warning_shown" => warning_shown ? previously_warned?(name) : true
+              "plaintext_warning_shown" => warning_emitted ? true : previously_warned?(name)
             }
           }
         }

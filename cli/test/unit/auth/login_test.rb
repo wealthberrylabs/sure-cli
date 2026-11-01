@@ -76,6 +76,48 @@ class LoginTest < Minitest::Test
     end
   end
 
+  def test_an_usage_body_without_api_key_scopes_is_rejected_and_persists_nothing
+    [ "{}", '{"api_key":{}}', '{"api_key":{"name":"key"}}' ].each do |body|
+      with_temp_config_home do |env, _home, xdg|
+        server = LocalHttpServer.new(responses: [ response(body) ])
+        runtime = build_runtime(env: env, stdin: StringIO.new(SECRET))
+
+        error = assert_raises(Sure::Errors::GeneralError) do
+          Sure::Auth::Login.new(
+            runtime: runtime,
+            options: { server: server.url, api_key_stdin: true }
+          ).call
+        end
+
+        assert_equal Sure::Errors::ExitCodes::GENERAL, error.exit_code
+        assert_includes error.message, "api_key.scopes"
+        assert_includes error.message, "--server"
+        refute File.exist?(File.join(xdg, "sure", "config.yml"))
+        refute File.exist?(File.join(xdg, "sure", "credentials.json"))
+      ensure
+        server&.stop
+      end
+    end
+  end
+
+  def test_an_empty_scopes_array_is_accepted_and_persists_read_only
+    with_temp_config_home do |env, _home, xdg|
+      server = LocalHttpServer.new(responses: [ response(usage_body(scopes: [])) ])
+      runtime = build_runtime(env: env, stdin: StringIO.new(SECRET))
+
+      result = Sure::Auth::Login.new(
+        runtime: runtime, options: { server: server.url, api_key_stdin: true }
+      ).call
+
+      assert_equal [], result.data["scopes"]
+      config = YAML.safe_load_file(File.join(xdg, "sure", "config.yml"))
+      assert_equal true, config.dig("profiles", "default", "read_only")
+      assert_equal [], config.dig("profiles", "default", "scopes")
+    ensure
+      server&.stop
+    end
+  end
+
   def test_the_input_flags_are_mutually_exclusive
     with_temp_config_home do |env, _home, _xdg|
       runtime = build_runtime(env: env)
