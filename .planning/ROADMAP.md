@@ -44,7 +44,7 @@ behalf of the web platform.
   4. `sure doctor` diagnoses a bad URL, key, or TLS setting and exits nonzero with an actionable message.
   5. `sure api GET /api/v1/accounts` works, and secrets never appear in output, logs, or debug traces.
 
-**Plans:** 6/9 plans executed
+**Plans:** 7/9 plans executed
 
 Plans:
 **Wave 1**
@@ -70,7 +70,7 @@ Plans:
 **Gap Closure** *(from 01-VERIFICATION.md, 2026-11-01; all four plans are independent and run in parallel)*
 
 - [x] 01-06: Normalize leading global options before Thor dispatch (gap 2 / CR-02)
-- [ ] 01-07: Hidden-prompt login, TLS settings, secret-length enforcement, strict `/usage` validation (gaps 1 & 3 / CR-01, CR-03, WR-02, WR-03, WR-04, WR-06)
+- [x] 01-07: Hidden-prompt login, TLS settings, secret-length enforcement, strict `/usage` validation (gaps 1 & 3 / CR-01, CR-03, WR-02, WR-03, WR-04, WR-06)
 - [ ] 01-08: Path-scoped credential identity and keychain-miss fallback (gap 4 / CR-04, WR-01)
 - [ ] 01-09: Guarded zsh completion script (gap 5 / CR-05)
 
@@ -246,7 +246,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & API-Key Authentication | 6/9 | In Progress | - |
+| 1. Foundation & API-Key Authentication | 7/9 | In Progress | - |
 | 2. Read & Report | 0/5 | Not started | - |
 | 3. Safe Writes | 0/5 | Not started | - |
 | 4. Imports, Sync & Exports | 0/5 | Not started | - |

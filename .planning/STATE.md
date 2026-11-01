@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-06-PLAN.md
-last_updated: "2026-11-01T17:22:18.841Z"
-last_activity: 2026-11-01 -- Completed 01-06 gap-closure plan
+stopped_at: Completed 01-07-PLAN.md
+last_updated: "2026-11-01T17:30:19.723Z"
+last_activity: 2026-11-01
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 9
-  completed_plans: 6
-  percent: 67
+  completed_plans: 7
+  percent: 78
 ---
 
 # Project State
@@ -25,31 +25,31 @@ See: .planning/PROJECT.md (updated 2026-10-31)
 
 ## Current Position
 
-Phase: 01 (Foundation & API-Key Authentication) — GAP CLOSURE PLANNED
-Plan: 6 of 9 executed; 01-07..01-09 await execution
+Phase: 01 (Foundation & API-Key Authentication) — GAP CLOSURE IN PROGRESS
+Plan: 7 of 9 executed; 01-08..01-09 await execution
 Status: Executing Phase 01
 Last activity: 2026-11-01
 
-Progress: [███████░░░] 67%
+Progress: [████████░░] 78%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 6
-- Average duration: 9 min
-- Total execution time: 0 hours 47 min
+- Total plans completed: 7
+- Average duration: 7 min
+- Total execution time: 0 hours 52 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 6 of 9 | 47 min | 8 min |
+| 01 | 7 of 9 | 52 min | 7 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-02 (4 min), 01-03 (7 min), 01-04 (15 min), 01-05 (9 min), 01-06 (3 min)
-- Trend: the output/doctor/completion slice stayed near the phase average; credential work was the outlier
+- Last 5 plans: 01-03 (7 min), 01-04 (15 min), 01-05 (9 min), 01-06 (3 min), 01-07 (5 min)
+- Trend: the output/doctor/completion slice stayed near the phase average; gap-closure plans are short and targeted
 
 *Updated after each plan completion*
 
@@ -61,6 +61,7 @@ Progress: [███████░░░] 67%
 | 01-04 | 15 min | 3 | 33 |
 | 01-05 | 9 min | 3 | 35 |
 | 01-06 | 3 min | 2 | 4 |
+| 01-07 | 5 min | 3 | 9 |
 
 ## Accumulated Context
 
@@ -93,6 +94,10 @@ Recent decisions affecting current work:
 - [Phase 01]: Doctor returns its first failed check code through a silent ExitStatusError — The rendered checklist is the complete output; the process boundary must not append a second error
 - [Phase 01]: Completion emits only validated catalog tokens and fixed flags, never catalog descriptions in shell command positions — Catalog text must not become shell code
 - [Phase 1]: Global option placement is normalized once in Runner: allowlisted leading options are hoisted behind the command, and unknown or value-less leading options exit 2
+- [Phase 01]: Login reads secrets only through hidden input: io/console is required behind a LoadError guard, and a terminal without getpass/noecho raises instead of falling back to an echoed gets — A terminal that cannot hide input must send the user to --api-key-file, --api-key-stdin, or SURE_API_KEY rather than echo a secret into scrollback
+- [Phase 01]: Login builds its probe profile through Config::Resolver with the resolved server URL, so CA bundle, TLS policy, timeouts, scopes, and credential store share one precedence implementation — A second hand-built profile is how login silently ignored --ca-bundle, --insecure, and profile tls_verify: false
+- [Phase 01]: The auth group declares output and TLS class options without defaults because root class options are parsed first and a group default overwrites the flag value during Thor subcommand option merge — Verified with a probe: --insecure arrived as false until the group defaults were removed
+- [Phase 01]: The minimum accepted API key length is the redactor floor (4 bytes) at prompt, stdin, file, environment, and stored-credential boundaries — A credential the redactor refuses to mask can be echoed by server errors, so it must be rejected at input time
 
 ### Pending Todos
 
@@ -121,8 +126,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-01T17:22:18.819Z
-Stopped at: Completed 01-06-PLAN.md
+Last session: 2026-11-01T17:30:19.701Z
+Stopped at: Completed 01-07-PLAN.md
 Resume file: None
 
-**Next step:** Run `/gsd-plan-phase 1 --gaps` to create gap-closure plans from 01-VERIFICATION.md, then `/gsd-execute-phase 1 --gaps-only`.
+**Next step:** Run `/gsd-execute-phase 1 --gaps-only` to execute the remaining gap-closure plans (01-08, 01-09), then re-verify phase 1.
