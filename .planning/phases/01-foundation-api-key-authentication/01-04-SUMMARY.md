@@ -117,6 +117,7 @@ Each task was committed atomically:
 1. **Task 1: Implement keychain stores, the atomic file fallback, and store selection** - `1db7bb379` (feat)
 2. **Task 2: Implement auth login/status/logout and write-scope preflight** - `06ad311b3` (feat)
 3. **Task 3: Add the authenticated user object to GET /api/v1/usage with tests and OpenAPI docs** - `19bf39819` (feat)
+4. **Follow-up: derive credential source without a second secret read** - `2733fc2d7` (refactor)
 
 **Plan metadata:** `docs(01-04)` commit follows this summary.
 
@@ -223,7 +224,7 @@ None beyond the plan's threat model. T-04-01 (private atomic storage and input l
 
 ## Self-Check: PASSED
 
-- Task commits `1db7bb379`, `06ad311b3`, and `19bf39819` exist on `main`.
+- Task commits `1db7bb379`, `06ad311b3`, `19bf39819`, and follow-up `2733fc2d7` exist on `main`.
 - All new store, auth, test-support, spec, and documentation files exist on disk; `docs/api/openapi.yaml` contains `"/api/v1/usage"` and `Usage:`.
 - No secret appears in any test assertion output, status payload, or generated documentation path exercised by the suite.
 
