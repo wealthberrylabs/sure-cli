@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md (walking skeleton)
-last_updated: "2026-11-01T01:12:50.289Z"
+stopped_at: Completed 01-02-PLAN.md (config and API-key provider)
+last_updated: "2026-11-01T01:19:19.688Z"
 last_activity: 2026-11-01
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
-  percent: 0
+  completed_plans: 2
+  percent: 40
 ---
 
 # Project State
@@ -26,36 +26,37 @@ See: .planning/PROJECT.md (updated 2026-10-31)
 ## Current Position
 
 Phase: 01 (Foundation & API-Key Authentication) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-11-01
 
-Progress: [██░░░░░░░░] 20%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 1
-- Average duration: 9 min
-- Total execution time: 0 hours
+- Total plans completed: 2
+- Average duration: 7 min
+- Total execution time: 0 hours 13 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 1 of 5 | 9 min | 9 min |
+| 01 | 2 of 5 | 13 min | 7 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (9 min)
-- Trend: first data point
+- Last 5 plans: 01-01 (9 min), 01-02 (4 min)
+- Trend: stabilizing around 5-10 min per plan
 
 *Updated after each plan completion*
 
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | 01-01 | 9 min | 4 | 36 |
+| 01-02 | 4 min | 3 | 24 |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - **Standard granularity, parallel plans, docs committed** — GSD config at `.planning/config.json`.
 - [Phase 01]: Catalog is the single source for help, examples, and command validation; planned entries stay invisible until implemented — Prevents help/completion drift and encodes D-01..D-04 before domain commands exist
 - [Phase 01]: Hide Thor's injected tree command so the product surface matches the catalog — Thor adds tree to every subclass; it is an implementation aid, not a CLI feature
+- [Phase 01]: Separate config.lock from credentials.lock so config read-modify-write and credential writes never share a lock — Prevents unrelated write paths from serializing against each other while keeping each lock private
+- [Phase 01]: Resolve profile, server, CA bundle, TLS, and output into one immutable Config::Profile with a sources map; commands never inspect argv or ENV — One precedence implementation prevents per-command drift and keeps diagnostics consistent
+- [Phase 01]: SURE_API_KEY is environment-only and marks cached profile scopes untrusted; NullStore remains the safe storage placeholder until Plan 01-04 — Automation keys must never be persisted, and wave-3 clients need a usable store interface before real backends land
 
 ### Pending Todos
 
@@ -100,8 +104,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-01T01:12:08.786Z
-Stopped at: Completed 01-01-PLAN.md (walking skeleton)
+Last session: 2026-11-01T01:19:19.649Z
+Stopped at: Completed 01-02-PLAN.md (config and API-key provider)
 Resume file: None
 
-**Next step:** Execute `01-02-PLAN.md` (`/gsd-execute-phase 1`) to add config, profiles, and server URL resolution.
+**Next step:** Execute `01-03-PLAN.md` (`/gsd-execute-phase 1`) to add the HTTP pipeline, errors, redaction, and pagination base.

@@ -11,8 +11,8 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 
 - [x] **FOUND-01**: User can install the CLI as a Ruby gem and run `sure` from any shell.
 - [x] **FOUND-02**: User can run `sure --version`, `sure help`, and per-command help with examples.
-- [ ] **FOUND-03**: User can define named server profiles and switch with `--profile`, `SURE_PROFILE`, or a default.
-- [ ] **FOUND-04**: User can target a server URL with a path prefix, custom CA bundle, or explicit insecure opt-in.
+- [x] **FOUND-03**: User can define named server profiles and switch with `--profile`, `SURE_PROFILE`, or a default.
+- [x] **FOUND-04**: User can target a server URL with a path prefix, custom CA bundle, or explicit insecure opt-in.
 - [ ] **FOUND-05**: User sees readable tables on a TTY and stable JSON when stdout is piped.
 - [ ] **FOUND-06**: User can force `--json`, `--csv`, `--ndjson`, and `--fields` output for scripting.
 - [ ] **FOUND-07**: User gets deterministic exit codes, errors on stderr, and no Ruby backtraces for expected failures.
@@ -29,7 +29,7 @@ Requirements for the first public release. Each maps to exactly one roadmap phas
 - [ ] **AUTH-05**: The CLI registers itself through dynamic client registration using an allowed, non-reserved client name.
 - [ ] **AUTH-06**: OAuth access tokens refresh automatically before expiry, and failures produce a clear re-login instruction.
 - [ ] **AUTH-07**: User can log out locally and, when supported, revoke the token or API key.
-- [ ] **AUTH-08**: CI and automation can supply a key through `SURE_API_KEY` without persisting it.
+- [x] **AUTH-08**: CI and automation can supply a key through `SURE_API_KEY` without persisting it.
 - [ ] **AUTH-09**: The CLI never prints, logs, or includes API keys, bearer tokens, or refresh tokens in errors, debug output, or copyable commands.
 
 ### Read & Report
