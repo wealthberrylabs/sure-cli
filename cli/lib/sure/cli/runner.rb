@@ -21,6 +21,13 @@ module Sure
         "use --api-key-file, --api-key-stdin, or SURE_API_KEY"
       ACTIVE_SECRET_ENV = "SURE_API_KEY"
 
+      GLOBAL_VALUE_OPTIONS = %w[--profile --server --ca-bundle --fields].freeze
+      GLOBAL_BOOLEAN_OPTIONS = %w[
+        --json --table --csv --ndjson --quiet --verbose
+        --color --no-color --insecure --no-insecure
+      ].freeze
+      TERMINAL_OPTIONS = %w[--version -v --help -h].freeze
+
       ERROR_SLUGS = {
         "Sure::Errors::UsageError" => "usage_error",
         "Sure::Errors::AuthenticationError" => "authentication_error",
@@ -48,7 +55,7 @@ module Sure
 
         Runtime.with(runtime) do
           reject_forbidden_api_key(argv)
-          Application.start(argv, debug: true, shell: Shell.new(runtime))
+          Application.start(normalize_global_options(argv), debug: true, shell: Shell.new(runtime))
         end
         Errors::ExitCodes::SUCCESS
       rescue Errors::Error => e
@@ -75,6 +82,61 @@ module Sure
             raise Errors::UsageError, FORBIDDEN_MESSAGE
           end
         end
+      end
+
+      # Thor resolves the command name from the first token, so a documented
+      # class option written before the command is mistaken for a command name.
+      # Move the leading run of known global options behind the command and its
+      # arguments, where Thor already accepts them, and reject anything else
+      # loudly instead of degrading to help. A bare `--` disables normalization
+      # so terminator arguments keep their original order.
+      def normalize_global_options(argv)
+        leading = []
+        index = 0
+
+        while index < argv.length
+          token = argv[index]
+          break unless token.is_a?(String) && token.start_with?("-")
+          return argv if token == "--"
+
+          if TERMINAL_OPTIONS.include?(token)
+            # Version and help must stay the first token for Thor to map them;
+            # keep any options collected ahead of them beside the terminal.
+            return argv if leading.empty?
+
+            return [ token ] + leading + (argv[(index + 1)..] || [])
+          end
+
+          name, inline_value = token.split("=", 2)
+
+          if GLOBAL_VALUE_OPTIONS.include?(name)
+            if inline_value.nil?
+              value = argv[index + 1]
+              if value.nil? || (value.is_a?(String) && value.start_with?("-"))
+                raise Errors::UsageError,
+                      "missing value for #{name}; pass #{name} VALUE or #{name}=VALUE"
+              end
+
+              leading << token << value
+              index += 2
+            else
+              leading << token
+              index += 1
+            end
+          elsif GLOBAL_BOOLEAN_OPTIONS.include?(name)
+            leading << token
+            index += 1
+          else
+            raise Errors::UsageError,
+                  "unknown global option #{name}; global options may appear " \
+                  "before or after the command but must be valid"
+          end
+        end
+
+        rest = argv[index..] || []
+        return argv if leading.empty? || rest.empty?
+
+        rest + leading
       end
 
       def machine_output?(argv)
