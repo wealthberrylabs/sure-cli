@@ -230,6 +230,75 @@ components:
           nullable: true
           description: Validation error messages (alternative to details used by trades,
             valuations, etc.)
+    Usage:
+      type: object
+      required:
+      - api_key
+      - rate_limit
+      - user
+      properties:
+        api_key:
+          type: object
+          required:
+          - name
+          - scopes
+          - last_used_at
+          - created_at
+          properties:
+            name:
+              type: string
+            scopes:
+              type: array
+              items:
+                type: string
+                enum:
+                - read
+                - read_write
+            last_used_at:
+              type: string
+              format: date-time
+              nullable: true
+            created_at:
+              type: string
+              format: date-time
+        rate_limit:
+          type: object
+          required:
+          - tier
+          - limit
+          - current_count
+          - remaining
+          - reset_in_seconds
+          - reset_at
+          properties:
+            tier:
+              type: string
+            limit:
+              type: integer
+            current_count:
+              type: integer
+            remaining:
+              type: integer
+            reset_in_seconds:
+              type: integer
+            reset_at:
+              type: string
+              format: date-time
+        user:
+          type: object
+          required:
+          - email
+          - first_name
+          - last_name
+          properties:
+            email:
+              type: string
+            first_name:
+              type: string
+              nullable: true
+            last_name:
+              type: string
+              nullable: true
     ErrorResponseWithImportId:
       type: object
       required:
@@ -10536,6 +10605,26 @@ paths:
                 "$ref": "#/components/schemas/ErrorResponse"
         '404':
           description: transfer not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+  "/api/v1/usage":
+    get:
+      summary: Retrieve API key usage
+      tags:
+      - Usage
+      security:
+      - apiKeyAuth: []
+      responses:
+        '200':
+          description: usage returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Usage"
+        '401':
+          description: unauthorized
           content:
             application/json:
               schema:

@@ -180,6 +180,46 @@ RSpec.configure do |config|
               }
             }
           },
+          Usage: {
+            type: :object,
+            required: %w[api_key rate_limit user],
+            properties: {
+              api_key: {
+                type: :object,
+                required: %w[name scopes last_used_at created_at],
+                properties: {
+                  name: { type: :string },
+                  scopes: {
+                    type: :array,
+                    items: { type: :string, enum: %w[read read_write] }
+                  },
+                  last_used_at: { type: :string, format: :'date-time', nullable: true },
+                  created_at: { type: :string, format: :'date-time' }
+                }
+              },
+              rate_limit: {
+                type: :object,
+                required: %w[tier limit current_count remaining reset_in_seconds reset_at],
+                properties: {
+                  tier: { type: :string },
+                  limit: { type: :integer },
+                  current_count: { type: :integer },
+                  remaining: { type: :integer },
+                  reset_in_seconds: { type: :integer },
+                  reset_at: { type: :string, format: :'date-time' }
+                }
+              },
+              user: {
+                type: :object,
+                required: %w[email first_name last_name],
+                properties: {
+                  email: { type: :string },
+                  first_name: { type: :string, nullable: true },
+                  last_name: { type: :string, nullable: true }
+                }
+              }
+            }
+          },
           ErrorResponseWithImportId: {
             type: :object,
             required: %w[error import_id],

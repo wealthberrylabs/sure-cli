@@ -48,6 +48,18 @@ class Api::V1::UsageControllerTest < ActionDispatch::IntegrationTest
     assert_equal 96, response_body["rate_limit"]["remaining"]
     assert response_body["rate_limit"]["reset_in_seconds"] > 0
     assert_not_nil response_body["rate_limit"]["reset_at"]
+
+    # The additive user object is identity-only: no id, no secrets.
+    assert_equal @user.email, response_body["user"]["email"]
+    assert_equal @user.first_name, response_body["user"]["first_name"]
+    assert_equal @user.last_name, response_body["user"]["last_name"]
+    assert_not response_body["user"].key?("id")
+    refute_includes response_body.to_json, @api_key.display_key
+
+    keys = all_keys(response_body)
+    %w[password password_digest token secret].each do |key|
+      refute_includes keys, key
+    end
   end
 
   test "should require read scope for usage endpoint" do
@@ -110,6 +122,15 @@ class Api::V1::UsageControllerTest < ActionDispatch::IntegrationTest
     assert_equal "99", response.headers["X-RateLimit-Remaining"]
   end
 
+  test "should include the authenticated user only on the API-key branch" do
+    get "/api/v1/usage", headers: { "X-Api-Key" => @api_key.display_key }
+    assert_response :success
+
+    response_body = JSON.parse(response.body)
+    assert_equal %w[api_key rate_limit user], response_body.keys.sort
+    assert_equal %w[email first_name last_name], response_body["user"].keys.sort
+  end
+
   test "should work correctly when approaching rate limit" do
     travel_to Time.zone.local(2026, 1, 1, 12, 15, 0) do
       # Make 98 requests to get close to the limit
@@ -135,4 +156,17 @@ class Api::V1::UsageControllerTest < ActionDispatch::IntegrationTest
       assert_response :too_many_requests
     end
   end
+
+  private
+
+    def all_keys(value)
+      case value
+      when Hash
+        value.keys.map(&:to_s) + value.values.flat_map { |item| all_keys(item) }
+      when Array
+        value.flat_map { |item| all_keys(item) }
+      else
+        []
+      end
+    end
 end

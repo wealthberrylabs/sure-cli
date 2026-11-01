@@ -7,6 +7,11 @@ class Api::V1::UsageController < Api::V1::BaseController
     when :api_key
       usage_info = @rate_limiter.usage_info
       render_json({
+        user: {
+          email: @current_user.email,
+          first_name: @current_user.first_name,
+          last_name: @current_user.last_name
+        },
         api_key: {
           name: @api_key.name,
           scopes: @api_key.scopes,

@@ -1,4 +1,9 @@
 {
+  "user": {
+    "email": "user@example.com",
+    "first_name": "Ada",
+    "last_name": "Lovelace"
+  },
   "api_key": {
     "name": "CLI smoke key",
     "scopes": ["read"],
