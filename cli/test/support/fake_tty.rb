@@ -24,6 +24,13 @@ class FakeTTY
     @input.read(*args)
   end
 
+  # Stands in for IO#getpass. The input stream is separate from the output
+  # stream, so a value read here is never echoed.
+  def getpass
+    line = @input.gets
+    line&.chomp
+  end
+
   def each_line(&block)
     @input.each_line(&block)
   end

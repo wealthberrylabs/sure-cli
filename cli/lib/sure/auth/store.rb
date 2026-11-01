@@ -4,6 +4,11 @@ require_relative "../errors"
 
 module Sure
   module Auth
+    # Internal failure from a credential backend or its helper process. It is
+    # never rendered directly: StoreFactory turns it into a fallback or a
+    # user-facing error.
+    class StoreError < StandardError; end
+
     # Interface every credential backend implements. Plan 01-04 adds the OS
     # keychain and file implementations; this plan only ships NullStore so an
     # environment-only key can build a client before storage exists.

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "../auth/api_key_provider"
+require_relative "../auth/store_factory"
 require_relative "../config"
 require_relative "../http/client"
 require_relative "../http/url_builder"
@@ -39,7 +40,7 @@ module Sure
       end
 
       def store
-        @store ||= Auth::NullStore.new
+        @store ||= Auth::StoreFactory.new(profile: profile, env: runtime.env)
       end
 
       def url_builder
