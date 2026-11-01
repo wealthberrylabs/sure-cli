@@ -156,3 +156,13 @@ None - no external service configuration required.
 ---
 *Phase: 01-foundation-api-key-authentication*
 *Completed: 2026-11-01*
+
+## Self-Check: PASSED
+
+- FOUND: cli/lib/sure/auth/credential_key.rb
+- FOUND: cli/lib/sure/http/auth_middleware.rb
+- FOUND: cli/lib/sure/auth/store_factory.rb
+- FOUND: cli/test/unit/http/auth_middleware_test.rb
+- FOUND: cli/test/unit/auth/logout_test.rb
+- FOUND: commit 0bbec0677
+- FOUND: commit 21e9380d1
